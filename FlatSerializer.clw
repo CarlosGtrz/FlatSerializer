@@ -254,6 +254,11 @@ valueEnd                      LONG
 unescapedVal                  ANY
 lineHasValues                 LONG
 lineEnd                       LONG
+pTextLen                      LONG
+QuoteSymbolLen                LONG
+ColumnSepLen                  LONG
+LineBreakLen                  LONG
+
   CODE    
   
   FREE(SELF.ColumnNames)
@@ -265,34 +270,38 @@ lineEnd                       LONG
   valueEnd = 0
   lineEnd = 0
   lineHasValues = 0
+  pTextLen = LEN(pText)
+  QuoteSymbolLen = LEN(SELF.QuoteSymbol)
+  ColumnSepLen = LEN(SELF.ColumnSep)
+  LineBreakLen = LEN(SELF.LineBreakString)
   pos = 0
   LOOP
     pos += 1
-    IF pos > LEN(pText) THEN BREAK.    
+    IF pos > pTextLen THEN BREAK.    
     
     !Detect quote
-    IF pos >= LEN(SELF.QuoteSymbol) AND pText[ pos - LEN(SELF.QuoteSymbol) + 1 : pos ] = SELF.QuoteSymbol
+    IF pos >= QuoteSymbolLen  AND pText[ pos - QuoteSymbolLen + 1 : pos ] = SELF.QuoteSymbol
       inQuote = CHOOSE(NOT inQuote)
     .
     
     IF NOT inQuote
       !Detect end of column 
-      IF pos >= LEN(SELF.ColumnSep) AND pText[ pos - LEN(SELF.ColumnSep) + 1 : pos ] = SELF.ColumnSep
-        valueEnd = pos - LEN(SELF.ColumnSep)
+      IF pos >= ColumnSepLen AND pText[ pos - ColumnSepLen + 1 : pos ] = SELF.ColumnSep
+        valueEnd = pos - ColumnSepLen
         lineHasValues = 1
       .
       !Detect end of line
-      IF pos >= LEN(SELF.LineBreakString) AND pText[ pos - LEN(SELF.LineBreakString) + 1 : pos ] = SELF.LineBreakString 
+      IF pos >= LineBreakLen AND pText[ pos - LineBreakLen + 1 : pos ] = SELF.LineBreakString 
         IF NOT lineHasValues AND NOT SELF.ReadLinesWithoutColumnSeparators
           !Skip empty line
           valueStart = pos+1
           CYCLE
         .        
-        valueEnd = pos - LEN(SELF.LineBreakString)
+        valueEnd = pos - LineBreakLen
         lineEnd = pos 
       .      
       !Detect end of text
-      IF pos = LEN(pText)      
+      IF pos = pTextLen   
         IF NOT valueEnd
           valueEnd = pos
         .        
@@ -300,21 +309,21 @@ lineEnd                       LONG
       .
       IF valueEnd
         !Remove Excel formula string constant start
-        IF valueEnd - valueStart + 1 >= LEN('='&SELF.QuoteSymbol)
-          IF pText[ valueStart : valueStart + LEN('='&SELF.QuoteSymbol) - 1 ] = '='&SELF.QuoteSymbol
-            valueStart += LEN('='&SELF.QuoteSymbol) 
+        IF valueEnd - valueStart + 1 >= QuoteSymbolLen+1
+          IF pText[ valueStart : valueStart + QuoteSymbolLen+1 - 1 ] = '='&SELF.QuoteSymbol
+            valueStart += QuoteSymbolLen+1
           .
         .
         !Remove starting quotes
-        IF valueEnd - valueStart + 1 >= LEN(SELF.QuoteSymbol)
-          IF pText[ valueStart : valueStart + LEN(SELF.QuoteSymbol) - 1 ] = SELF.QuoteSymbol
-            valueStart += LEN(SELF.QuoteSymbol) 
+        IF valueEnd - valueStart + 1 >= QuoteSymbolLen
+          IF pText[ valueStart : valueStart + QuoteSymbolLen - 1 ] = SELF.QuoteSymbol
+            valueStart += QuoteSymbolLen
           .
         .
         !Remove ending quotes
-        IF valueEnd - valueStart + 1 >= LEN(SELF.QuoteSymbol)
-          IF pText[ valueEnd - LEN(SELF.QuoteSymbol) + 1 : valueEnd ] = SELF.QuoteSymbol
-            valueEnd -= LEN(SELF.QuoteSymbol) 
+        IF valueEnd - valueStart + 1 >= QuoteSymbolLen
+          IF pText[ valueEnd - QuoteSymbolLen + 1 : valueEnd ] = SELF.QuoteSymbol
+            valueEnd -= QuoteSymbolLen
           .
         .
         unescapedVal = SELF.UnEscapeQuotes(pText[valueStart : valueEnd])     

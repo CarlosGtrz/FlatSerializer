@@ -933,5 +933,8 @@ TestResult ANY
     STOP(TestResult)
   .
   
+  TestsResult =  CHOOSE(TestsResult = '','',TestsResult&'<13,10>')& |         
+      TestResult  
+  
   RETURN CHOOSE(pExpected = pActual)
     

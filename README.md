@@ -31,7 +31,7 @@ To load the same text file to a queue:
   FREE(myQ)
   fs.Init
   fs.LoadTextFile('testqueue.csv')
-  fs.DeSerializeToQueue(myQ,'testqueue.csv')
+  fs.DeSerializeToQueue(myQ)
 ```
 
 You can also query a value in a particular value by name and line number:

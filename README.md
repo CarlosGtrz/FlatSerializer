@@ -44,21 +44,21 @@ You can also query a value in a particular value by name and line number:
 
 Some of the features:
 
-* Serializes groups, queues and files to a string or a text file.
+* Serializes groups, queues and files to a string or text file.
 * Deserializes a string or text file to groups, queues or files.
 * Can read the value of any column by name and line number.
 * Handles new lines, commas (or tabs) and escaped (doubled) quotes inside quoted strings.
 * Can be configured to use tabs instead of commas, or alternative line break and quote symbols.
 * Detects the data type of fields (number, string, date or time) and formats them (with configurable date and time pictures).
 * When serializing, fields in the structure can be excluded by name or by reference.
-* When deserializing, fields in the structure have multiple aliases.
+* When deserializing, fields in the structure can have multiple aliases.
 * Handles `NAME()` with "extended | attributes".
 * Removes prefixes by default.
-* Can be configured to use quotes in strings only when needed (contains a new lines or commas).
+* Can be configured to use quotes in strings only when needed (the string contains new lines or commas).
   
   
 ## *Install*
-Copy `FlatSerializer.clw` and `FlatSerializer.inc` to the app folder or a folder in your `.red` file, like `Accessory\libsrc`.
+Copy `FlatSerializer.clw` and `FlatSerializer.inc` to the app folder or a folder in your `.red` file, like `Accessory\libsrc\win`.
 
 ## *Use*
 Add to a global data embed (like _After Global INCLUDEs_) the line:
@@ -193,7 +193,7 @@ DeSerializeToGroup (*GROUP pGroup,LONG pLine = 1)
 DeSerializeToQueue (*QUEUE pQueue)
 DeSerializeToFile (*FILE pFile)
 ```
-Fills the fields in the structure with the corresponding loaded columnd values and, for queues and files, adds a new record for each line.
+Fills the fields in the structure with the corresponding loaded column values and, for queues and files, adds a new record for each line.
 
 ## Utility
 ```

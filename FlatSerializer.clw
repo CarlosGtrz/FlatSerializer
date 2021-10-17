@@ -27,6 +27,20 @@
 !OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 !SOFTWARE.
 
+!Local Class, inspired by StringClass in xmlclass.inc/TreeViewWrap.clw
+fsDynString         CLASS,TYPE
+s                     &STRING,PRIVATE
+len                   LONG,PRIVATE
+set                   PROCEDURE(STRING str)
+get                   PROCEDURE(),STRING
+get                   PROCEDURE(LONG pstart,LONG pend),STRING
+len                   PROCEDURE(),LONG
+append                PROCEDURE(STRING str)
+append                PROCEDURE(STRING str,STRING sep)
+replace               PROCEDURE(STRING pOldString,STRING pNewString)
+Destruct              PROCEDURE
+                    END
+
 FlatSerializer.Init PROCEDURE(<STRING pColumnSep>,<STRING pLineBreakString>,<STRING pQuoteSymbol>)
   CODE
   
@@ -124,72 +138,70 @@ FlatSerializer.AddExcludedFieldByReference  PROCEDURE(*? pField)
   ADD(SELF.ExcludedFields)
 
 FlatSerializer.SerializeGroupNames  PROCEDURE(*GROUP pGroup)!,STRING
-names                                 ANY
+names                                 fsDynString
 idx                                   LONG
   CODE
   
   SELF.ParseGroup(pGroup)
-  names = ''
   LOOP idx = 1 TO RECORDS(SELF.Fields)
     GET(SELF.Fields,idx)
-    names = names & |
-        CHOOSE(names <> '',SELF.ColumnSep,'') & |
-        CLIP(SELF.Fields.Name)
+    names.append(CLIP(SELF.Fields.Name),SELF.ColumnSep)
   .
-  RETURN names
+  RETURN names.get()
   
 FlatSerializer.SerializeGroupValues PROCEDURE(*GROUP pGroup)!,STRING
-values                                ANY
+values                                fsDynString
 idx                                   LONG
   CODE
 
   SELF.ParseGroup(pGroup)
-  values = ''
   LOOP idx = 1 TO RECORDS(SELF.Fields)
     GET(SELF.Fields,idx)
-    values = values & |
-        CHOOSE(values <> '',SELF.ColumnSep,'') & |
-        SELF.FormatFieldValue()    
+    values.append(SELF.FormatFieldValue(),SELF.ColumnSep)
   .
-  RETURN values
+  RETURN values.get()
   
 FlatSerializer.SerializeGroup   PROCEDURE(*GROUP pGroup)!,STRING
 idx                               LONG
-serialized                        ANY
+serialized                        fsDynString
   CODE
-  
-  serialized = ''
   IF SELF.IncludeHeaders
-    serialized = SELF.SerializeGroupNames(pGroup) & | 
-        SELF.LineBreakString    
+    serialized.set( |
+        SELF.SerializeGroupNames(pGroup) & | 
+        SELF.LineBreakString |
+        )
   .  
-  serialized = serialized & |
+  serialized.append( |
       SELF.SerializeGroupValues(pGroup) & | 
-      SELF.LineBreakString    
-  RETURN serialized
+      SELF.LineBreakString |    
+      )  
+  RETURN serialized.get()
   
 FlatSerializer.SerializeQueue   PROCEDURE(*QUEUE pQueue)!,STRING
 idx                               LONG
-serialized                        ANY
+serialized                        fsDynString
   CODE
   
-  serialized = ''
   IF SELF.IncludeHeaders
-    serialized = SELF.SerializeGroupNames(pQueue) & | 
-        SELF.LineBreakString    
+    serialized.set( |
+        SELF.SerializeGroupNames(pQueue) & | 
+        SELF.LineBreakString |    
+        )
+    
   .  
   LOOP idx = 1 TO RECORDS(pQueue)
     GET(pQueue,idx)
-    serialized = serialized & |
+    serialized.append( |        
         SELF.SerializeGroupValues(pQueue) & | 
-        SELF.LineBreakString    
+        SELF.LineBreakString |    
+        )    
   .
-  RETURN serialized
+  RETURN serialized.get()
 
 FlatSerializer.SerializeFile    PROCEDURE(*FILE pFile,<*KEY pFileKey>)!,STRING
-serialized                        ANY
-filerec                              &GROUP
-filekey                              &KEY
+serialized                        fsDynString
+filerec                           &GROUP
+filekey                           &KEY
   CODE
   
   filerec &= pFile{PROP:Record}
@@ -206,19 +218,21 @@ filekey                              &KEY
   ELSE
     SET(pFile)
   .
-  serialized = ''
   IF SELF.IncludeHeaders
-    serialized = SELF.SerializeGroupNames(filerec) & | 
-        SELF.LineBreakString    
+    serialized.set( |
+        SELF.SerializeGroupNames(filerec) & | 
+        SELF.LineBreakString |    
+        )    
   .  
   LOOP
     NEXT(pFile)
     IF ERRORCODE() THEN BREAK.
-    serialized = serialized & |
+    serialized.append( |
         SELF.SerializeGroupValues(filerec) & | 
-        SELF.LineBreakString
+        SELF.LineBreakString |
+        )    
   .
-  RETURN serialized  
+  RETURN serialized.get()
   
 FlatSerializer.SerializeGroupToTextFile PROCEDURE(*GROUP pGroup,STRING pFileName)
   CODE
@@ -244,14 +258,14 @@ FlatSerializer.AddFieldAliasByReference PROCEDURE(*? pField,STRING pAlias)
   SELF.FieldsAlias.Name = pAlias
   SELF.FieldsAlias.UpperName = UPPER(pAlias)
   ADD(SELF.FieldsAlias)
-
+  
 FlatSerializer.LoadString   PROCEDURE(STRING pText)
 pos                           LONG
 inHeaders                     LONG
 inQuote                       LONG
 valueStart                    LONG
 valueEnd                      LONG
-unescapedVal                  ANY
+unescapedVal                  fsDynString
 lineHasValues                 LONG
 lineEnd                       LONG
 pTextLen                      LONG
@@ -270,7 +284,7 @@ LineBreakLen                  LONG
   valueEnd = 0
   lineEnd = 0
   lineHasValues = 0
-  pTextLen = LEN(pText)
+  pTextLen = SIZE(pText)
   QuoteSymbolLen = LEN(SELF.QuoteSymbol)
   ColumnSepLen = LEN(SELF.ColumnSep)
   LineBreakLen = LEN(SELF.LineBreakString)
@@ -281,7 +295,7 @@ LineBreakLen                  LONG
     
     !Detect quote
     IF pos >= QuoteSymbolLen  AND pText[ pos - QuoteSymbolLen + 1 : pos ] = SELF.QuoteSymbol
-      inQuote = CHOOSE(NOT inQuote)
+      inQuote = 1 - inQuote!CHOOSE(NOT inQuote)
     .
     
     IF NOT inQuote
@@ -326,18 +340,18 @@ LineBreakLen                  LONG
             valueEnd -= QuoteSymbolLen
           .
         .
-        unescapedVal = SELF.UnEscapeQuotes(pText[valueStart : valueEnd])     
+        unescapedVal.set(SELF.UnEscapeQuotes(pText[valueStart : valueEnd]))
         IF inHeaders
           CLEAR(SELF.ColumnNames)
-          SELF.ColumnNames.Name = unescapedVal
-          SELF.ColumnNames.UpperName = UPPER(unescapedVal)
+          SELF.ColumnNames.Name = unescapedVal.get()
+          SELF.ColumnNames.UpperName = UPPER(SELF.ColumnNames.Name)
           ADD(SELF.ColumnNames)
         ELSE
           IF SELF.LineValues.ColumnValues &= NULL
             SELF.LineValues.ColumnValues &= NEW fsColumnValues
           .
-          SELF.LineValues.ColumnValues.Value &= NEW STRING(LEN(unescapedVal))
-          SELF.LineValues.ColumnValues.Value = unescapedVal
+          SELF.LineValues.ColumnValues.Value &= NEW STRING (unescapedVal.len())
+          SELF.LineValues.ColumnValues.Value = unescapedVal.get()
           ADD(SELF.LineValues.ColumnValues)
         .        
         valueStart = pos + 1
@@ -357,9 +371,14 @@ LineBreakLen                  LONG
   .  
   
 FlatSerializer.LoadTextFile PROCEDURE(STRING pFileName)
+str &STRING
   CODE
   
-  SELF.LoadString(SELF.StringFromTextFile(pFileName))      
+  str &= SELF.StringFromTextFile(pFileName)
+  IF NOT str &= NULL
+    SELF.LoadString(str)
+  .
+  DISPOSE(str)
    
 FlatSerializer.GetLinesCount    PROCEDURE()!,LONG
   CODE
@@ -396,25 +415,10 @@ idx                                   LONG
     GET(SELF.ColumnNames,idx)
     CLEAR(SELF.LineValues.ColumnValues)
     GET(SELF.LineValues.ColumnValues,idx)
-    CLEAR(SELF.FieldsAlias)
     CLEAR(SELF.Fields)
-    SELF.Fields.UpperName = SELF.ColumnNames.UpperName
+    SELF.Fields.UpperName = SELF.ColumnNames.FieldUpperName
     GET(SELF.Fields,SELF.Fields.UpperName)
-    IF ERRORCODE() THEN 
-      !Look for alias
-      IF NOT RECORDS(SELF.FieldsAlias) THEN CYCLE.
-      CLEAR(SELF.FieldsAlias)
-      SELF.FieldsAlias.UpperName = SELF.ColumnNames.UpperName
-      GET(SELF.FieldsAlias,SELF.FieldsAlias.UpperName)
-      IF ERRORCODE() THEN CYCLE.      
-      !Alias found, get field
-      CLEAR(SELF.Fields)
-      SELF.Fields.TufoType = SELF.FieldsAlias.TufoType
-      SELF.Fields.TufoAddress = SELF.FieldsAlias.TufoAddress
-      SELF.Fields.TufoSize = SELF.FieldsAlias.TufoSize
-      GET(SELF.Fields,SELF.Fields.TufoType,SELF.Fields.TufoAddress,SELF.Fields.TufoSize)
-      IF ERRORCODE() THEN CYCLE.
-    .
+    IF ERRORCODE() THEN CYCLE.
     SELF.Fields.Ref = SELF.DeformatColumnValue()
   .
   
@@ -443,7 +447,7 @@ fgr                                   &GROUP
   
 FlatSerializer.ParseGroup   PROCEDURE(*GROUP pGroup,LONG pLevel = 1)!,PRIVATE
 idx                           LONG
-nam                           ANY
+nam                           LIKE(SELF.Fields.Name)
 ref                           ANY
 pos                           LONG
 grref                         &GROUP
@@ -483,7 +487,7 @@ gTufoSize                     LONG
       nam = 'Field'&idx
     .    
     SELF.Fields.Name = nam
-    SELF.Fields.UpperName = UPPER(nam)    
+    SELF.Fields.UpperName = UPPER(SELF.Fields.Name)    
     IF SELF.IsExcluded()
       SELF.Fields.Ref &= NULL
       CYCLE
@@ -497,6 +501,41 @@ gTufoSize                     LONG
       SELF.ParseGroup(grref,pLevel+1)
     .
   .
+  
+  IF pLevel = 1  
+    DO ResolveAliases
+  .
+  
+ResolveAliases      ROUTINE
+
+  IF NOT RECORDS(SELF.ColumnNames) THEN EXIT.
+  
+  !Default link  
+  LOOP idx = 1 TO RECORDS(SELF.ColumnNames)
+    GET(SELF.ColumnNames,idx)
+    SELF.ColumnNames.FieldUpperName = SELF.ColumnNames.UpperName
+    PUT(SELF.ColumnNames)
+  .  
+  IF NOT RECORDS(SELF.FieldsAlias) THEN EXIT.  
+  
+  !Link field name to column name
+  LOOP idx = 1 TO RECORDS(SELF.ColumnNames)
+    GET(SELF.ColumnNames,idx)
+    !Look for alias
+    CLEAR(SELF.FieldsAlias)
+    SELF.FieldsAlias.UpperName = SELF.ColumnNames.UpperName
+    GET(SELF.FieldsAlias,SELF.FieldsAlias.UpperName)
+    IF ERRORCODE() THEN CYCLE.
+    !Alias found, get field
+    CLEAR(SELF.Fields)
+    SELF.Fields.TufoType = SELF.FieldsAlias.TufoType
+    SELF.Fields.TufoAddress = SELF.FieldsAlias.TufoAddress
+    SELF.Fields.TufoSize = SELF.FieldsAlias.TufoSize
+    GET(SELF.Fields,SELF.Fields.TufoType,SELF.Fields.TufoAddress,SELF.Fields.TufoSize)
+    IF ERRORCODE() THEN CYCLE.
+    SELF.ColumnNames.FieldUpperName = SELF.Fields.UpperName
+    PUT(SELF.ColumnNames)
+  .      
   
 FlatSerializer.IsExcluded   PROCEDURE()!,BOOL,PRIVATE
 idx                           LONG
@@ -537,13 +576,11 @@ count                             LONG
   RETURN count
   
 FlatSerializer.FormatFieldValue  PROCEDURE()!,STRING,PRIVATE
-value                         ANY
   CODE
   
   IF LEFT(SELF.Fields.Ref,2) = '="' AND RIGHT(SELF.Fields.Ref,1) = '"' !Excel won't quote separators inside formula string constant
     RETURN '="'&SELF.BlankSeparators(SUB(SELF.Fields.Ref,3,LEN(SELF.Fields.Ref)-3))&'"' !Replace separators with ' '
   .  
-  value = ''    
   CASE SELF.Fields.TufoType
     OF DataType:BYTE 
     OROF DataType:SHORT 
@@ -555,76 +592,63 @@ value                         ANY
     OROF DataType:REAL 
     OROF DataType:SREAL
       !Numbers
-      value = SELF.Fields.Ref
+      RETURN SELF.Fields.Ref
     OF DataType:DATE
-      value = FORMAT(SELF.Fields.Ref,SELF.DatesPicture)
+      RETURN FORMAT(SELF.Fields.Ref,SELF.DatesPicture)
     OF DataType:TIME
-      value = FORMAT(SELF.Fields.Ref,SELF.TimesPicture)
+      RETURN FORMAT(SELF.Fields.Ref,SELF.TimesPicture)
     ELSE
       !Strings
       IF SELF.AlwaysQuoteStrings OR |
           INSTRING(SELF.ColumnSep,SELF.Fields.Ref,1,1) OR |
           INSTRING(SELF.LineBreakString,SELF.Fields.Ref,1,1) OR |
           INSTRING(SELF.QuoteSymbol,SELF.Fields.Ref,1,1) 
-        value = SELF.QuoteSymbol & SELF.EscapeQuotes(CLIP(SELF.Fields.Ref)) & SELF.QuoteSymbol
+        RETURN SELF.QuoteSymbol & SELF.EscapeQuotes(CLIP(SELF.Fields.Ref)) & SELF.QuoteSymbol
       ELSE
-        value = CLIP(SELF.Fields.Ref)
+        RETURN CLIP(SELF.Fields.Ref)
       .      
   .
-  RETURN value
+  RETURN ''
 
 FlatSerializer.DeformatColumnValue  PROCEDURE()!,STRING,PRIVATE
-value                             ANY
   CODE  
 
-  value = ''
   CASE SELF.Fields.TufoType
     OF DataType:DATE
-      value = DEFORMAT(SELF.LineValues.ColumnValues.Value,SELF.DatesPicture)
+      RETURN DEFORMAT(SELF.LineValues.ColumnValues.Value,SELF.DatesPicture)
     OF DataType:TIME
-      value = DEFORMAT(SELF.LineValues.ColumnValues.Value,SELF.TimesPicture)
+      RETURN DEFORMAT(SELF.LineValues.ColumnValues.Value,SELF.TimesPicture)
     ELSE
-      value = SELF.LineValues.ColumnValues.Value
+      RETURN SELF.LineValues.ColumnValues.Value
   .
-  RETURN value
+  RETURN ''
   
 FlatSerializer.EscapeQuotes PROCEDURE(STRING pText)!,STRING,PRIVATE
+value fsDynString
   CODE    
-
-  RETURN SELF.Replace(pText,SELF.QuoteSymbol,SELF.QuoteSymbol&SELF.QuoteSymbol)
+  
+  value.set(pText)
+  value.replace(SELF.QuoteSymbol,SELF.QuoteSymbol&SELF.QuoteSymbol)
+  RETURN value.get()
   
 FlatSerializer.UnEscapeQuotes   PROCEDURE(STRING pText)!,STRING,PRIVATE
+value                             fsDynString
   CODE  
   
-  RETURN SELF.Replace(pText,SELF.QuoteSymbol&SELF.QuoteSymbol,SELF.QuoteSymbol)
+  value.set(pText)  
+  value.replace(SELF.QuoteSymbol&SELF.QuoteSymbol,SELF.QuoteSymbol)
+  RETURN value.get()
   
 FlatSerializer.BlankSeparators  PROCEDURE(STRING pText)!,STRING,PRIVATE  
-value                             ANY
+value                             fsDynString
   CODE
   
-  value = pText
-  value = SELF.Replace(value,SELF.ColumnSep,' ')
-  value = SELF.Replace(value,SELF.LineBreakString,' ')
-  value = SELF.Replace(value,SELF.QuoteSymbol,' ')
-  RETURN CLIP(value)
-  
-FlatSerializer.Replace  PROCEDURE(STRING pText,STRING pOldString,STRING pNewString)!,STRING,PRIVATE
-value                     ANY
-start                     LONG
-pos                       LONG
-  CODE    
-  value = pText  
-  start = 1
-  LOOP
-    pos = INSTRING(pOldString,value,1,start)
-    IF NOT pos THEN BREAK.
-    value = SUB(value,1,pos-1)& |
-        pNewString& |
-        SUB(value,pos+LEN(pOldString),LEN(value) - pos - LEN(pOldString) + 1)
-    start = pos+LEN(pNewString)
-  .
-  RETURN value  
-  
+  value.set(pText)
+  value.replace(SELF.ColumnSep,' ')
+  value.replace(SELF.LineBreakString,' ')
+  value.replace(SELF.QuoteSymbol,' ')
+  RETURN CLIP(value.get())
+
 FlatSerializer.GetTufoInfo  PROCEDURE(*? pAny,*LONG pType,*LONG pAddress,*LONG pSize)
 !REGION TUFO
 !From https://github.com/MarkGoldberg/ClarionCommunity/blob/master/CW/Shared/Src/TUFO.INT
@@ -761,47 +785,56 @@ bufSize                               EQUATE(32768)
 dosFile                               FILE,DRIVER('DOS'),CREATE
 buf                                     RECORD;STRING(bufSize).
                                       END
-pos                                   LONG(1)
+pos                               LONG(1)
+strLen                            LONG
   CODE  
   dosFile{PROP:Name} = pFileName
   CREATE(dosFile)
   IF ERRORCODE() THEN RETURN.
   OPEN(dosFile)
   IF ERRORCODE() THEN RETURN.
-  LOOP UNTIL pos > LEN(pStr)
-    dosFile.Buf = pStr[ pos : LEN(pStr) ]
+  strLen = LEN(pStr)
+  LOOP UNTIL pos > strLen
+    dosFile.Buf = pStr[ pos : strLen ]
     ADD(dosFile, |
-        CHOOSE(pos + bufSize > LEN(pStr), |
-        LEN(pStr) - pos + 1, |
+        CHOOSE(pos + bufSize > strLen, |
+        strLen - pos + 1, |
         bufSize))
     pos += bufSize
   .
   CLOSE(dosfile)
   
-FlatSerializer.StringFromTextFile   PROCEDURE(STRING pFileName)!,STRING,PRIVATE
-bufSize                                   EQUATE(32768)
-dosFile                                   FILE,DRIVER('DOS'),CREATE
-buf                                         RECORD;STRING(bufSize).
-                                          END
-pos                                       LONG(1)
-fileSize                                  LONG
-str                                       ANY
+FlatSerializer.StringFromTextFile   PROCEDURE(STRING pFileName)!,*STRING,PRIVATE
+bufSize                               EQUATE(32768)
+dosFile                               FILE,DRIVER('DOS'),CREATE
+                                        RECORD
+buf                                       STRING(bufSize)
+                                        END
+                                      END
+pos                                   LONG(1)
+poslen                                LONG
+fileSize                              LONG
+str                                   &STRING
+
   CODE  
   dosFile{PROP:Name} = pFileName   
-  OPEN(dosFile)
-  IF ERRORCODE() THEN RETURN ''.  
+  OPEN(dosFile,40h) !ReadOnly+DenyNone
+  IF ERRORCODE() THEN RETURN NULL.  
   fileSize = BYTES(dosFile)  
   IF NOT fileSize THEN 
     CLOSE(dosFile)
-    RETURN ''
+    RETURN NULL
   .
-  str = ''
+  str &= NEW STRING(fileSize)  
+  SEND (dosFile, 'FILEBUFFERS=' & ROUND(fileSize/512, 1))
   LOOP UNTIL pos > fileSize
     GET(dosFile,pos)
-    str = str & SUB(dosFile.buf,1,| 
-        CHOOSE(pos + bufSize > fileSize, |
-        fileSize - pos + 1, |
-        bufSize))    
+    IF pos + bufSize > fileSize
+      poslen = fileSize - pos + 1
+    ELSE
+      poslen = bufSize
+    .   
+    str [ pos : pos + poslen - 1 ] = dosFile.buf [ 1 : poslen ]
     pos += bufSize    
   .
   CLOSE(dosfile)
@@ -836,4 +869,65 @@ FlatSerializer.Destruct PROCEDURE
   DISPOSE(SELF.ColumnNames)
   SELF.FreeLineValues
   DISPOSE(SELF.LineValues) 
+
+fsDynString.set     PROCEDURE(STRING str)
+  CODE
+  DISPOSE(SELF.s)
+  IF SIZE(str) > 0
+    SELF.len = SIZE(str)
+    SELF.s &= NEW STRING(SELF.len)
+    SELF.s = str
+  .
   
+fsDynString.get           PROCEDURE()!,STRING
+  CODE
+  IF SELF.s &= NULL THEN RETURN ''.
+  RETURN SELF.s
+
+fsDynString.get     PROCEDURE(LONG pstart,LONG pend)!,STRING
+  CODE
+  IF SELF.s &= NULL THEN RETURN ''.
+  IF pstart > SELF.len() OR pend > SELF.len() OR pstart > pend OR pstart < 0 OR pend < 0 THEN RETURN ''.
+  RETURN SELF.s[ pstart : pend ]
+
+fsDynString.len     PROCEDURE()!,LONG
+  CODE
+  IF SELF.s &= NULL THEN RETURN 0.
+  RETURN SELF.len
+
+fsDynString.append  PROCEDURE(STRING str)
+  CODE
+  SELF.set(SELF.get() & str)
+
+fsDynString.append  PROCEDURE(STRING str,STRING sep)
+  CODE
+  IF SELF.s &= NULL
+    SELF.set(str)
+  ELSE    
+    SELF.set(SELF.get() & sep & str)
+  .
+  
+fsDynString.replace PROCEDURE(STRING pOldString,STRING pNewString)
+start                 LONG
+pos                   LONG
+oldStringLen          LONG
+newStringLen          LONG
+  CODE    
+  IF SELF.s &= NULL THEN RETURN.
+  oldStringLen = LEN(pOldString)
+  newStringLen = LEN(pNewString)
+  start = 1
+  LOOP
+    pos = INSTRING(pOldString,SELF.s,1,start)
+    IF NOT pos THEN BREAK.
+    SELF.set( | 
+        SELF.get(1,pos-1) & |
+        pNewString & |
+        SELF.get(pos+oldStringLen,SELF.len()) |
+        ) 
+    start = pos + newStringLen
+  .
+
+fsDynString.Destruct    PROCEDURE
+  CODE
+  DISPOSE(SELF.s) 

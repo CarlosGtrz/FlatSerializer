@@ -39,6 +39,7 @@ TufoSize              LONG
 fsColumnNames       QUEUE,TYPE
 Name                  STRING(60)
 UpperName             STRING(60)
+FieldUpperName        STRING(60)
                     END
 
 fsColumnValues      QUEUE,TYPE
@@ -86,7 +87,7 @@ DeSerializeToFile     PROCEDURE(*FILE pFile)
 
 !Utility
 StringToTextFile      PROCEDURE(STRING pStr,STRING pFileName)!,PRIVATE
-StringFromTextFile    PROCEDURE(STRING pFileName),STRING!,PRIVATE
+StringFromTextFile    PROCEDURE(STRING pFileName),*STRING!,PRIVATE
 
 !Private
 ParseGroup            PROCEDURE(*GROUP pGroup,LONG pLevel = 1),PRIVATE
@@ -97,7 +98,6 @@ DeformatColumnValue   PROCEDURE(),STRING,PRIVATE
 EscapeQuotes          PROCEDURE(STRING pText),STRING,PRIVATE
 UnEscapeQuotes        PROCEDURE(STRING pText),STRING,PRIVATE
 BlankSeparators       PROCEDURE(STRING pText),STRING,PRIVATE
-Replace               PROCEDURE(STRING pText,STRING pOldString,STRING pNewString),STRING,PRIVATE
 GetTufoInfo           PROCEDURE(*? pAny,*LONG pType,*LONG pAddress,*LONG pSize),PRIVATE
 Free                  PROCEDURE(fsFieldsQueue pQueue),PRIVATE
 FreeLineValues        PROCEDURE,PRIVATE
@@ -124,6 +124,7 @@ FieldsAlias           &fsFieldsQueue,PRIVATE
 ColumnNames           &fsColumnNames,PRIVATE
 LineValues            &fsLineValues,PRIVATE
                     END
+
   MAP
     MODULE('win32')
       fs_OutputDebugString(*CSTRING cstr),PASCAL,RAW,NAME('OutputDebugStringA')      

@@ -1,0 +1,2883 @@
+[APPLICATION]
+VERSION 34
+TODO ABC ToDo
+DICTIONARY 'Invoice.dct'
+PROCEDURE Tests
+[COMMON]
+FROM ABC
+MODIFIED '2021/06/12' '11:27:14'
+[PROMPTS]
+%ClassItem UNIQUE DEFAULT  ('ErrorManager', 'ErrorStatusManager', 'FileManager:', |
+  'FileManager:Customers', 'FileManager:Detail', 'FileManager:DetailS', 'FileManager:Orders', |
+  'FileManager:OrdersS', 'FileManager:Products', 'FuzzyMatcher', 'INIManager', 'RelationManager:', |
+  'RelationManager:Customers', 'RelationManager:Detail', 'RelationManager:DetailS', |
+  'RelationManager:Orders', 'RelationManager:OrdersS', 'RelationManager:Products', |
+  'Translator')
+%DefaultBaseClassType DEPEND %ClassItem DEFAULT TIMES 17
+WHEN  ('ErrorManager') ('ErrorClass')
+WHEN  ('ErrorStatusManager') ('ErrorStatusClass')
+WHEN  ('FileManager:Customers') ('FileManager')
+WHEN  ('FileManager:Detail') ('FileManager')
+WHEN  ('FileManager:DetailS') ('FileManager')
+WHEN  ('FileManager:Orders') ('FileManager')
+WHEN  ('FileManager:OrdersS') ('FileManager')
+WHEN  ('FileManager:Products') ('FileManager')
+WHEN  ('FuzzyMatcher') ('FuzzyClass')
+WHEN  ('INIManager') ('INIClass')
+WHEN  ('RelationManager:Customers') ('RelationManager')
+WHEN  ('RelationManager:Detail') ('RelationManager')
+WHEN  ('RelationManager:DetailS') ('RelationManager')
+WHEN  ('RelationManager:Orders') ('RelationManager')
+WHEN  ('RelationManager:OrdersS') ('RelationManager')
+WHEN  ('RelationManager:Products') ('RelationManager')
+WHEN  ('Translator') ('TranslatorClass')
+
+%ActualDefaultBaseClassType DEPEND %ClassItem DEFAULT TIMES 17
+WHEN  ('ErrorManager') ('')
+WHEN  ('ErrorStatusManager') ('')
+WHEN  ('FileManager:Customers') ('')
+WHEN  ('FileManager:Detail') ('')
+WHEN  ('FileManager:DetailS') ('')
+WHEN  ('FileManager:Orders') ('')
+WHEN  ('FileManager:OrdersS') ('')
+WHEN  ('FileManager:Products') ('')
+WHEN  ('FuzzyMatcher') ('')
+WHEN  ('INIManager') ('')
+WHEN  ('RelationManager:Customers') ('')
+WHEN  ('RelationManager:Detail') ('')
+WHEN  ('RelationManager:DetailS') ('')
+WHEN  ('RelationManager:Orders') ('')
+WHEN  ('RelationManager:OrdersS') ('')
+WHEN  ('RelationManager:Products') ('')
+WHEN  ('Translator') ('')
+
+%ClassLines DEPEND %ClassItem MULTI DEFAULT TIMES 8
+WHEN  ('FileManager:Customers') ('Init {19}PROCEDURE(),DERIVED', 'Kill {19}PROCEDURE(),DERIVED', |
+  'PrimeFields {12}PROCEDURE(),PROC,DERIVED', 'UseFile {16}PROCEDURE(BYTE UseType = UseType:Uses),BYTE,PROC,DERIVED')
+WHEN  ('FileManager:Detail') ('Init {19}PROCEDURE(),DERIVED', 'Kill {19}PROCEDURE(),DERIVED', |
+  'UseFile {16}PROCEDURE(BYTE UseType = UseType:Uses),BYTE,PROC,DERIVED', 'ValidateFieldServer    PROCEDURE(UNSIGNED Id,BYTE HandleErrors),BYTE,PROC,DERIVED')
+WHEN  ('FileManager:Orders') ('Init {19}PROCEDURE(),DERIVED', 'Kill {19}PROCEDURE(),DERIVED', |
+  'PrimeFields {12}PROCEDURE(),PROC,DERIVED', 'UseFile {16}PROCEDURE(BYTE UseType = UseType:Uses),BYTE,PROC,DERIVED', |
+  'ValidateFieldServer    PROCEDURE(UNSIGNED Id,BYTE HandleErrors),BYTE,PROC,DERIVED')
+WHEN  ('FileManager:Products') ('Init {19}PROCEDURE(),DERIVED', 'Kill {19}PROCEDURE(),DERIVED', |
+  'UseFile {16}PROCEDURE(BYTE UseType = UseType:Uses),BYTE,PROC,DERIVED')
+WHEN  ('RelationManager:Customers') ('Init {19}PROCEDURE', 'DeferedAddRelations    PROCEDURE(),DERIVED', |
+  'Kill {19}PROCEDURE(),DERIVED')
+WHEN  ('RelationManager:Detail') ('Init {19}PROCEDURE', 'DeferedAddRelations    PROCEDURE(),DERIVED', |
+  'Kill {19}PROCEDURE(),DERIVED')
+WHEN  ('RelationManager:Orders') ('Init {19}PROCEDURE', 'DeferedAddRelations    PROCEDURE(),DERIVED', |
+  'Kill {19}PROCEDURE(),DERIVED')
+WHEN  ('RelationManager:Products') ('Init {19}PROCEDURE', 'DeferedAddRelations    PROCEDURE(),DERIVED', |
+  'Kill {19}PROCEDURE(),DERIVED')
+
+%ProgramAuthor DEFAULT  ('')
+%ProgramIcon DEFAULT  ('')
+%MessageDescription LONG  (1)
+%GlobalExternal LONG  (0)
+%ExternalSource DEFAULT  ('Dynamic Link Library (DLL)')
+%GenerateEmbedComments LONG  (0)
+%INIType DEFAULT  ('NVD_INI')
+%INIFile DEFAULT  ('Program Name.INI')
+%ININame DEFAULT  ('')
+%INIProgramIniLocation DEFAULT  ('APPDIR')
+%INICSIDLDirectory DEFAULT  ('SV:CSIDL_PERSONAL')
+%CSIDLCompanyDir DEFAULT  ('')
+%CSIDLProductDir DEFAULT  ('')
+%CSIDLCreate LONG  (0)
+%INIInAppDirectory LONG  (1)
+%REGRoot DEFAULT  ('REG_CLASSES_ROOT')
+%DisableINISaveWindow LONG  (1)
+%PreserveVars MULTI LONG  ()
+%PreserveVar DEPEND %PreserveVars DEFAULT TIMES 0
+
+%EnableRunTimeTranslator LONG  (0)
+%FuzzyMatchingEnabled LONG  (0)
+%IgnoreCase LONG  (1)
+%WordOnly LONG  (0)
+%ButtonMarginsCompatibility LONG  (0)
+%UseDefaultXPManifest LONG  (0)
+%GenerateXPManifest LONG  (0)
+%LinkGenerateXPManifest LONG  (0)
+%AddVistaXPManifest LONG  (0)
+%VistaManifestExecutionLevel DEFAULT  ('asInvoker')
+%VistaManifestUIAccess LONG  (0)
+%NoThemedControlsDependency LONG  (0)
+%VistaManifestdpiAware LONG  (1)
+%VistaManifestDependentAssembly MULTI LONG  ()
+%VistaManifestDependentAssemblyName DEPEND %VistaManifestDependentAssembly DEFAULT TIMES 0
+
+%VistaManifestDependentAssemblyVersion DEPEND %VistaManifestDependentAssembly DEFAULT TIMES 0
+
+%VistaManifestDependentAssemblyType DEPEND %VistaManifestDependentAssembly DEFAULT TIMES 0
+
+%VistaManifestDependentAssemblyPublicKeyToken DEPEND %VistaManifestDependentAssembly DEFAULT TIMES 0
+
+%VistaManifestDependentAssemblyLanguage DEPEND %VistaManifestDependentAssembly DEFAULT TIMES 0
+
+%VistaManifestDependentAssemblyProcessorArchitecture DEPEND %VistaManifestDependentAssembly LONG TIMES 0
+
+%W7ManifestVista LONG  (1)
+%W7ManifestW7 LONG  (1)
+%W7ManifestW8 LONG  (1)
+%W7ManifestW81 LONG  (1)
+%W7ManifestW10 LONG  (1)
+%ForceMakeTransparentXPManifest LONG  (0)
+%ForceMakeColorXPManifest LONG  (0)
+%ForceSHEETNoTheme LONG  (0)
+%ExtUIXPMenuEnableGlobal LONG  (0)
+%ExtUIXPMenuColorTypeGlobal DEFAULT  ('OFF')
+%ExtUIXPMenuDisableImageBar LONG  (1)
+%ExtUIXPMenuEnableRuntime LONG  (0)
+%ExtUIXPMenuRuntimeVar DEFAULT  ('')
+%ExtUIXPMenuColorLeftGlobal LONG  (15920364)
+%ExtUIXPMenuColorRightGlobal LONG  (12560039)
+%ExtUIXPMenuColorSelectionBarLeftGlobal LONG  (15920364)
+%ExtUIXPMenuColorSelectionBarRightGlobal LONG  (15920364)
+%ExtUIXPMenuSelVertical LONG  (1)
+%ExtUIXPMenuColorSelectionBorderGlobal LONG  (15920364)
+%ExtUIXPMenuColorHotLeftGlobal LONG  (15920364)
+%ExtUIXPMenuColorHotRightGlobal LONG  (15920364)
+%ExtUIXPMenuColorSelectedLeftGlobal LONG  (15920364)
+%ExtUIXPMenuColorSelectedRightGlobal LONG  (15920364)
+%ExtUIXPMenuColorNormalBarLeftGlobal LONG  (15920364)
+%ExtUIXPMenuColorNormalBarRightGlobal LONG  (15920364)
+%ExtUIXPMenuColorItemBackgroundGlobal LONG  (-2147483644)
+%ExtUIXPMenuColorNormalText LONG  (0)
+%ExtUIXPMenuColorSelectedText LONG  (0)
+%ExtUIXPMenuColorHotText LONG  (0)
+%ExtUIXPMenuFlat LONG  (1)
+%ExtUIXPMenuShowImageBar LONG  (0)
+%ExtUIXPMenuSeparator3D LONG  (1)
+%ExtUIXPMenuSeparatorFull LONG  (0)
+%ExtUIXPMenuVerticalLine LONG  (1)
+%ExtUIMDITabGlobal DEFAULT  ('DISABLE')
+%ExtUIMDITabStyleGlobal DEFAULT  ('Default')
+%ExtUITabStyleGlobal DEFAULT  ('Default')
+%WindowEnableEnhanceFocus LONG  (0)
+%SelectedText LONG  (1)
+%SelectedRadio LONG  (1)
+%SelectedSpin LONG  (1)
+%SelectedCheck LONG  (1)
+%SelectedDropList LONG  (1)
+%SelectedList LONG  (1)
+%SelectedDisplayChangeColor LONG  (1)
+%SelectedColor LONG  (65535)
+%SelectedStyle LONG  (1)
+%SelectedRequired LONG  (0)
+%SelectedRequiredColor LONG  (65535)
+%SelectedDisplayBox LONG  (1)
+%SelectedDisplayBoxFillColor LONG  (65535)
+%SelectedDisplayBoxBorderColor LONG  (0)
+%SelectedDisplayBoxBorderSize DEFAULT  ('2')
+%SelectedRequiredBox LONG  (0)
+%SelectedRequiredDisplayBoxFillColor LONG  (255)
+%SelectedRequiredDisplayBoxBorderColor LONG  (0)
+%SelectedCaret LONG  (1)
+%SelectedCaretColor LONG  (8421504)
+%SelectedCaretCharacter DEFAULT  ('»')
+%SelectedCaretCharacterSeparation DEFAULT  ('8')
+%ExcludeSelectedDropList LONG  (0)
+%EnableOSK DEFAULT  ('OFF')
+%GlobalUseEnterInsteadTab LONG  (0)
+%GlobalUseEnterInsteadTabExclude MULTI DEFAULT  ()
+%GlobalUseEnterInsteadTabEnable DEFAULT  ('Enable')
+%GlobalUseEnterInsteadTabEnableValue DEFAULT  ('True')
+%GlobalInterLine DEFAULT  ('0')
+%GlobalEnableAutoSizeColumn LONG  (0)
+%GlobalEnableListFormatManager LONG  (0)
+%GlobalUserFieldListFormatManager DEFAULT  ('1')
+%TableOrigin DEFAULT  ('Application')
+%FileEquate DEFAULT  ('LFM_CFile')
+%ConfigFilePRE DEFAULT  ('CFG')
+%ConfigFileOEM LONG  (0)
+%ConfigFileTHREAD LONG  (1)
+%ConfigFileENCRYPT LONG  (0)
+%ConfigFilePASSWORD DEFAULT  ('')
+%FormatNameSize DEFAULT  ('30')
+%FormatBufferSize DEFAULT  ('5120')
+%VariableBufferSize DEFAULT  ('2048')
+%ConfigFilePath DEFAULT  ('')
+%UseConfigFileName DEFAULT  ('Default')
+%ConfigFileNAME DEFAULT  ('Formats.FDB')
+%ColonCounter DEFAULT  ('')
+%WrongSymbol DEFAULT  ('')
+%DictionaryTableOrigin FILE  ()
+%GlobalLFMSortOrderMenuText DEFAULT  ('SortOrder')
+%GlobalEnableRebase LONG  (0)
+%RBDMethod DEFAULT  ('Specify manually')
+%RBDImageBase DEFAULT  ('10000000')
+%DefaultGenerate LONG  (0)
+%DefaultRILogout LONG  (1)
+%LockRecoverTime DEFAULT  ('10')
+%DefaultThreaded DEFAULT  ('Use File Setting')
+%DefaultCreate DEFAULT  ('Use File Setting')
+%DefaultExternal DEFAULT  ('None External')
+%DefaultLocalExternal LONG  (0)
+%DefaultExternalSource DEFAULT  ('')
+%DefaultExternalAPP LONG  (0)
+%DefaultExport LONG  (0)
+%DefaultOpenMode DEFAULT  ('Share')
+%DefaultUserAccess DEFAULT  ('Read/Write')
+%DefaultOtherAccess DEFAULT  ('Deny None')
+%DefaultLazyOpen LONG  (1)
+%GeneratePropDataPath LONG  (0)
+%PropDataPathLocation DEFAULT  ('CSIDLLIKEINI')
+%DataPathCSIDLDirectory DEFAULT  ('SV:CSIDL_PERSONAL')
+%DataPathCSIDLCompanyDir DEFAULT  ('')
+%DataPathCSIDLProductDir DEFAULT  ('')
+%DataPathCSIDLCreate LONG  (0)
+%DataPathOtherDirectory DEFAULT  ('')
+%DataPathOtherDirectoryCreate LONG  (0)
+%OverrideGenerate DEPEND %File LONG TIMES 0
+
+%OverrideRILogout DEPEND %File DEFAULT TIMES 7
+WHEN  ('') ('Use Default')
+WHEN  ('Customers') ('Use Default')
+WHEN  ('Detail') ('Use Default')
+WHEN  ('DetailS') ('Use Default')
+WHEN  ('Orders') ('Use Default')
+WHEN  ('OrdersS') ('Use Default')
+WHEN  ('Products') ('Use Default')
+
+%GlobalObject DEPEND %ClassItem DEFAULT TIMES 17
+WHEN  ('ErrorManager') ('YES')
+WHEN  ('ErrorStatusManager') ('YES')
+WHEN  ('FileManager:Customers') ('YES')
+WHEN  ('FileManager:Detail') ('YES')
+WHEN  ('FileManager:DetailS') ('YES')
+WHEN  ('FileManager:Orders') ('YES')
+WHEN  ('FileManager:OrdersS') ('YES')
+WHEN  ('FileManager:Products') ('YES')
+WHEN  ('FuzzyMatcher') ('YES')
+WHEN  ('INIManager') ('YES')
+WHEN  ('RelationManager:Customers') ('YES')
+WHEN  ('RelationManager:Detail') ('YES')
+WHEN  ('RelationManager:DetailS') ('YES')
+WHEN  ('RelationManager:Orders') ('YES')
+WHEN  ('RelationManager:OrdersS') ('YES')
+WHEN  ('RelationManager:Products') ('YES')
+WHEN  ('Translator') ('YES')
+
+%ThisObjectName DEPEND %ClassItem DEFAULT TIMES 17
+WHEN  ('ErrorManager') ('GlobalErrors')
+WHEN  ('ErrorStatusManager') ('GlobalErrorsStatus')
+WHEN  ('FileManager:Customers') ('Hide:Access:Customers')
+WHEN  ('FileManager:Detail') ('Hide:Access:Detail')
+WHEN  ('FileManager:DetailS') ('Hide:Access:DetailS')
+WHEN  ('FileManager:Orders') ('Hide:Access:Orders')
+WHEN  ('FileManager:OrdersS') ('Hide:Access:OrdersS')
+WHEN  ('FileManager:Products') ('Hide:Access:Products')
+WHEN  ('FuzzyMatcher') ('FuzzyMatcher')
+WHEN  ('INIManager') ('INIMgr')
+WHEN  ('RelationManager:Customers') ('Hide:Relate:Customers')
+WHEN  ('RelationManager:Detail') ('Hide:Relate:Detail')
+WHEN  ('RelationManager:DetailS') ('Hide:Relate:DetailS')
+WHEN  ('RelationManager:Orders') ('Hide:Relate:Orders')
+WHEN  ('RelationManager:OrdersS') ('Hide:Relate:OrdersS')
+WHEN  ('RelationManager:Products') ('Hide:Relate:Products')
+WHEN  ('Translator') ('Translator')
+
+%UseDefaultABCBaseClass DEPEND %ClassItem LONG TIMES 17
+WHEN  ('ErrorManager') (1)
+WHEN  ('ErrorStatusManager') (1)
+WHEN  ('FileManager:Customers') (1)
+WHEN  ('FileManager:Detail') (1)
+WHEN  ('FileManager:DetailS') (1)
+WHEN  ('FileManager:Orders') (1)
+WHEN  ('FileManager:OrdersS') (1)
+WHEN  ('FileManager:Products') (1)
+WHEN  ('FuzzyMatcher') (1)
+WHEN  ('INIManager') (1)
+WHEN  ('RelationManager:Customers') (1)
+WHEN  ('RelationManager:Detail') (1)
+WHEN  ('RelationManager:DetailS') (1)
+WHEN  ('RelationManager:Orders') (1)
+WHEN  ('RelationManager:OrdersS') (1)
+WHEN  ('RelationManager:Products') (1)
+WHEN  ('Translator') (1)
+
+%UseABCBaseClass DEPEND %ClassItem LONG TIMES 17
+WHEN  ('ErrorManager') (1)
+WHEN  ('ErrorStatusManager') (1)
+WHEN  ('FileManager:Customers') (1)
+WHEN  ('FileManager:Detail') (1)
+WHEN  ('FileManager:DetailS') (1)
+WHEN  ('FileManager:Orders') (1)
+WHEN  ('FileManager:OrdersS') (1)
+WHEN  ('FileManager:Products') (1)
+WHEN  ('FuzzyMatcher') (1)
+WHEN  ('INIManager') (1)
+WHEN  ('RelationManager:Customers') (1)
+WHEN  ('RelationManager:Detail') (1)
+WHEN  ('RelationManager:DetailS') (1)
+WHEN  ('RelationManager:Orders') (1)
+WHEN  ('RelationManager:OrdersS') (1)
+WHEN  ('RelationManager:Products') (1)
+WHEN  ('Translator') (1)
+
+%ABCBaseClass DEPEND %ClassItem DEFAULT TIMES 17
+WHEN  ('ErrorManager') ('')
+WHEN  ('ErrorStatusManager') ('')
+WHEN  ('FileManager:Customers') ('')
+WHEN  ('FileManager:Detail') ('')
+WHEN  ('FileManager:DetailS') ('')
+WHEN  ('FileManager:Orders') ('')
+WHEN  ('FileManager:OrdersS') ('')
+WHEN  ('FileManager:Products') ('')
+WHEN  ('FuzzyMatcher') ('')
+WHEN  ('INIManager') ('')
+WHEN  ('RelationManager:Customers') ('')
+WHEN  ('RelationManager:Detail') ('')
+WHEN  ('RelationManager:DetailS') ('')
+WHEN  ('RelationManager:Orders') ('')
+WHEN  ('RelationManager:OrdersS') ('')
+WHEN  ('RelationManager:Products') ('')
+WHEN  ('Translator') ('')
+
+%ExtBaseClass DEPEND %ClassItem DEFAULT TIMES 0
+
+%BaseClassIncludeFile DEPEND %ClassItem DEFAULT TIMES 0
+
+%DeriveFromBaseClass DEPEND %ClassItem LONG TIMES 17
+WHEN  ('ErrorManager') (0)
+WHEN  ('ErrorStatusManager') (0)
+WHEN  ('FileManager:Customers') (0)
+WHEN  ('FileManager:Detail') (0)
+WHEN  ('FileManager:DetailS') (0)
+WHEN  ('FileManager:Orders') (0)
+WHEN  ('FileManager:OrdersS') (0)
+WHEN  ('FileManager:Products') (0)
+WHEN  ('FuzzyMatcher') (0)
+WHEN  ('INIManager') (0)
+WHEN  ('RelationManager:Customers') (0)
+WHEN  ('RelationManager:Detail') (0)
+WHEN  ('RelationManager:DetailS') (0)
+WHEN  ('RelationManager:Orders') (0)
+WHEN  ('RelationManager:OrdersS') (0)
+WHEN  ('RelationManager:Products') (0)
+WHEN  ('Translator') (0)
+
+%NewMethods DEPEND %ClassItem MULTI LONG TIMES 0
+
+%NewMethodName DEPEND %NewMethods DEFAULT TIMES 0
+
+%NewMethodPrototype DEPEND %NewMethods DEFAULT TIMES 0
+
+%NewClassPropertyItems DEPEND %ClassItem MULTI LONG TIMES 0
+
+%NewClassProperty DEPEND %NewClassPropertyItems DEFAULT TIMES 0
+
+%NewClassDataType DEPEND %NewClassPropertyItems DEFAULT TIMES 2
+WHEN  ('FuzzyMatcher')TIMES 0
+WHEN  ('INIManager')TIMES 0
+
+%NewClassOtherType DEPEND %NewClassPropertyItems DEFAULT TIMES 0
+
+%NewClassDataIsRef DEPEND %NewClassPropertyItems LONG TIMES 0
+
+%NewClassDataSize DEPEND %NewClassPropertyItems DEFAULT TIMES 0
+
+%NewClassDataDim1 DEPEND %NewClassPropertyItems DEFAULT TIMES 0
+
+%NewClassDataDim2 DEPEND %NewClassPropertyItems DEFAULT TIMES 0
+
+%NewClassDataDim3 DEPEND %NewClassPropertyItems DEFAULT TIMES 0
+
+%NewClassDataDim4 DEPEND %NewClassPropertyItems DEFAULT TIMES 0
+
+%ClassMethods DEPEND %ClassItem MULTI LONG TIMES 0
+
+%ClassMethodName DEPEND %ClassMethods DEFAULT TIMES 0
+
+%ClassMethodPrototype DEPEND %ClassMethods DEFAULT TIMES 0
+
+%ClassPropertyItems DEPEND %ClassItem MULTI LONG TIMES 0
+
+%ClassProperty DEPEND %ClassPropertyItems DEFAULT TIMES 0
+
+%ClassDataType DEPEND %ClassPropertyItems DEFAULT TIMES 2
+WHEN  ('FuzzyMatcher')TIMES 0
+WHEN  ('INIManager')TIMES 0
+
+%ClassOtherType DEPEND %ClassPropertyItems DEFAULT TIMES 0
+
+%ClassDataIsRef DEPEND %ClassPropertyItems LONG TIMES 0
+
+%ClassDataSize DEPEND %ClassPropertyItems DEFAULT TIMES 0
+
+%ClassDataDim1 DEPEND %ClassPropertyItems DEFAULT TIMES 0
+
+%ClassDataDim2 DEPEND %ClassPropertyItems DEFAULT TIMES 0
+
+%ClassDataDim3 DEPEND %ClassPropertyItems DEFAULT TIMES 0
+
+%ClassDataDim4 DEPEND %ClassPropertyItems DEFAULT TIMES 0
+
+%OverrideThreaded DEPEND %File DEFAULT TIMES 7
+WHEN  ('') ('Use Default')
+WHEN  ('Customers') ('Use Default')
+WHEN  ('Detail') ('Use Default')
+WHEN  ('DetailS') ('Use Default')
+WHEN  ('Orders') ('Use Default')
+WHEN  ('OrdersS') ('Use Default')
+WHEN  ('Products') ('Use Default')
+
+%OverrideCreate DEPEND %File DEFAULT TIMES 7
+WHEN  ('') ('Use Default')
+WHEN  ('Customers') ('Use Default')
+WHEN  ('Detail') ('Use Default')
+WHEN  ('DetailS') ('Use Default')
+WHEN  ('Orders') ('Use Default')
+WHEN  ('OrdersS') ('Use Default')
+WHEN  ('Products') ('Use Default')
+
+%OverrideExternal DEPEND %File DEFAULT TIMES 7
+WHEN  ('') ('Use Default')
+WHEN  ('Customers') ('Use Default')
+WHEN  ('Detail') ('Use Default')
+WHEN  ('DetailS') ('Use Default')
+WHEN  ('Orders') ('Use Default')
+WHEN  ('OrdersS') ('Use Default')
+WHEN  ('Products') ('Use Default')
+
+%OverrideLocalExternal DEPEND %File LONG TIMES 0
+
+%OverrideExternalSource DEPEND %File DEFAULT TIMES 0
+
+%OverrideExternalAPP DEPEND %File LONG TIMES 0
+
+%OverrideExport DEPEND %File LONG TIMES 0
+
+%FileDeclarationMode DEPEND %File DEFAULT TIMES 7
+WHEN  ('') ('Use User Options')
+WHEN  ('Customers') ('Use User Options')
+WHEN  ('Detail') ('Use User Options')
+WHEN  ('DetailS') ('Use User Options')
+WHEN  ('Orders') ('Use User Options')
+WHEN  ('OrdersS') ('Use User Options')
+WHEN  ('Products') ('Use User Options')
+
+%FileDeclarationType DEPEND %File LONG TIMES 7
+WHEN  ('') (0)
+WHEN  ('Customers') (0)
+WHEN  ('Detail') (0)
+WHEN  ('DetailS') (0)
+WHEN  ('Orders') (0)
+WHEN  ('OrdersS') (0)
+WHEN  ('Products') (0)
+
+%FileDeclarationThread DEPEND %File LONG TIMES 7
+WHEN  ('') (0)
+WHEN  ('Customers') (1)
+WHEN  ('Detail') (1)
+WHEN  ('DetailS') (1)
+WHEN  ('Orders') (1)
+WHEN  ('OrdersS') (1)
+WHEN  ('Products') (1)
+
+%FileDeclarationBindable DEPEND %File LONG TIMES 7
+WHEN  ('') (1)
+WHEN  ('Customers') (1)
+WHEN  ('Detail') (1)
+WHEN  ('DetailS') (1)
+WHEN  ('Orders') (1)
+WHEN  ('OrdersS') (1)
+WHEN  ('Products') (1)
+
+%FileDeclarationName DEPEND %File DEFAULT TIMES 0
+
+%FileDeclarationOver DEPEND %File DEFAULT TIMES 0
+
+%OverrideOpenMode DEPEND %File DEFAULT TIMES 7
+WHEN  ('') ('Use Default')
+WHEN  ('Customers') ('Use Default')
+WHEN  ('Detail') ('Use Default')
+WHEN  ('DetailS') ('Use Default')
+WHEN  ('Orders') ('Use Default')
+WHEN  ('OrdersS') ('Use Default')
+WHEN  ('Products') ('Use Default')
+
+%OverrideUserAccess DEPEND %File DEFAULT TIMES 7
+WHEN  ('') ('Use Default')
+WHEN  ('Customers') ('Use Default')
+WHEN  ('Detail') ('Use Default')
+WHEN  ('DetailS') ('Use Default')
+WHEN  ('Orders') ('Use Default')
+WHEN  ('OrdersS') ('Use Default')
+WHEN  ('Products') ('Use Default')
+
+%OverrideOtherAccess DEPEND %File DEFAULT TIMES 7
+WHEN  ('') ('Use Default')
+WHEN  ('Customers') ('Use Default')
+WHEN  ('Detail') ('Use Default')
+WHEN  ('DetailS') ('Use Default')
+WHEN  ('Orders') ('Use Default')
+WHEN  ('OrdersS') ('Use Default')
+WHEN  ('Products') ('Use Default')
+
+%OverrideLazyOpen DEPEND %File DEFAULT TIMES 7
+WHEN  ('') ('Use Default')
+WHEN  ('Customers') ('Use Default')
+WHEN  ('Detail') ('Use Default')
+WHEN  ('DetailS') ('Use Default')
+WHEN  ('Orders') ('Use Default')
+WHEN  ('OrdersS') ('Use Default')
+WHEN  ('Products') ('Use Default')
+
+%OverrideDoNotAssertOnCloseMisuse DEPEND %File LONG TIMES 7
+WHEN  ('') (0)
+WHEN  ('Customers') (0)
+WHEN  ('Detail') (0)
+WHEN  ('DetailS') (0)
+WHEN  ('Orders') (0)
+WHEN  ('OrdersS') (0)
+WHEN  ('Products') (0)
+
+%StandardExternalModule DEPEND %Module LONG TIMES 6
+WHEN  ('') (1)
+WHEN  ('FlatSerializer.CLW') (1)
+WHEN  ('FlatSerializer.clw') (1)
+WHEN  ('TestApp.clw') (1)
+WHEN  ('TestApp001.clw') (1)
+WHEN  ('Tests.clw') (1)
+
+%NoGenerateGlobals LONG  (0)
+%WindowManagerType DEFAULT  ('WindowManager')
+%ResetOnGainFocus LONG  (0)
+%AutoToolbar LONG  (1)
+%AutoRefresh LONG  (1)
+%ImageClass DEFAULT  ('ImageManager')
+%ErrorStatusManagerType DEFAULT  ('ErrorStatusClass')
+%ErrorManagerType DEFAULT  ('ErrorClass')
+%DefaultErrorCategory DEFAULT  ('ABC')
+%AllowSelectCopy LONG  (0)
+%StoreErrorHistory LONG  (0)
+%LimitStoredHistory LONG  (0)
+%ErrorHistoryThreshold DEFAULT  ('300')
+%HistoryViewTrigger DEFAULT  ('Level:Fatal')
+%PopupClass DEFAULT  ('PopupClass')
+%SelectFileClass DEFAULT  ('SelectFileClass')
+%ResizerType DEFAULT  ('WindowResizeClass')
+%ResizerDeFaultFindParents LONG  (1)
+%ResizerDefaultOptimizeMoves LONG  (1)
+%ResizerDefaultOptimizeRedraws LONG  (1)
+%INIClass DEFAULT  ('INIClass')
+%RunTimeTranslatorType DEFAULT  ('TranslatorClass')
+%ExtractionFilename DEFAULT  ('')
+%TranslationGroups MULTI LONG  ()
+%TranslationFile DEPEND %TranslationGroups DEFAULT TIMES 0
+
+%TranslationGroup DEPEND %TranslationGroups DEFAULT TIMES 0
+
+%CalendarManagerType DEFAULT  ('CalendarClass')
+%GlobalChangeColor LONG  (0)
+%GlobalColorSunday LONG  (255)
+%GlobalColorSaturday LONG  (255)
+%GlobalColorHoliday LONG  (32768)
+%GlobalColorOther LONG  (0)
+%GlobalSelectOnClose DEFAULT  ('Select')
+%GlobalUseABCClasess LONG  (1)
+%FileManagerType DEFAULT  ('FileManager')
+%ViewManagerType DEFAULT  ('ViewManager')
+%RelationManagerType DEFAULT  ('RelationManager')
+%BrowserType DEFAULT  ('BrowseClass')
+%ActiveInvisible LONG  (0)
+%AllowUnfilled LONG  (0)
+%RetainRow LONG  (1)
+%FileDropManagerType DEFAULT  ('FileDropClass')
+%FileDropComboManagerType DEFAULT  ('FileDropComboClass')
+%FormVCRManagerType DEFAULT  ('FormVCRClass')
+%BrowseEIPManagerType DEFAULT  ('BrowseEIPManager')
+%EditInPlaceInterface DEFAULT  ('Detailed')
+%EditInPlaceType DEFAULT  ('EditEntryClass')
+%EditInPlaceEntryType DEFAULT  ('EditEntryClass')
+%EditInPlaceTextType DEFAULT  ('EditTextClass')
+%EditInPlaceCheckType DEFAULT  ('EditCheckClass')
+%EditInPlaceSpinType DEFAULT  ('EditSpinClass')
+%EditInPlaceDropListType DEFAULT  ('EditDropListClass')
+%EditInPlaceDropComboType DEFAULT  ('EditDropComboClass')
+%EditInPlaceColorType DEFAULT  ('EditColorClass')
+%EditInPlaceFileType DEFAULT  ('EditFileClass')
+%EditInPlaceFontType DEFAULT  ('EditFontClass')
+%EditInPlaceMultiSelectType DEFAULT  ('EditMultiSelectClass')
+%EditInPlaceCalendarType DEFAULT  ('EditCalendarClass')
+%EditInPlaceLookupType DEFAULT  ('EditLookupClass')
+%EditInPlaceOtherType DEFAULT  ('EditEntryClass')
+%QBEFormType DEFAULT  ('QueryFormClass')
+%QBEFormVisualType DEFAULT  ('QueryFormVisual')
+%QBEListType DEFAULT  ('QueryListClass')
+%QBEListVisualType DEFAULT  ('QueryListVisual')
+%StepManagerType DEFAULT  ('StepClass')
+%StepManagerLongType DEFAULT  ('StepLongClass')
+%StepManagerRealType DEFAULT  ('StepRealClass')
+%StepManagerStringType DEFAULT  ('StepStringClass')
+%StepManagerCustomType DEFAULT  ('StepCustomClass')
+%StepLocatorType DEFAULT  ('StepLocatorClass')
+%EntryLocatorType DEFAULT  ('EntryLocatorClass')
+%IncrementalLocatorType DEFAULT  ('IncrementalLocatorClass')
+%FilteredLocatorType DEFAULT  ('FilterLocatorClass')
+%FuzzyMatcherClass DEFAULT  ('FuzzyClass')
+%GridClass DEFAULT  ('GridClass')
+%SidebarClass DEFAULT  ('SidebarClass')
+%ProcessType DEFAULT  ('ProcessClass')
+%PrintPreviewType DEFAULT  ('PrintPreviewClass')
+%ReportManagerType DEFAULT  ('ReportManager')
+%ReportTargetSelectorManagerType DEFAULT  ('ReportTargetSelectorClass')
+%BreakManagerType DEFAULT  ('BreakManagerClass')
+%AsciiViewerClass DEFAULT  ('AsciiViewerClass')
+%AsciiSearchClass DEFAULT  ('AsciiSearchClass')
+%AsciiPrintClass DEFAULT  ('AsciiPrintClass')
+%AsciiFileManagerType DEFAULT  ('AsciiFileClass')
+%ToolbarClass DEFAULT  ('ToolbarClass')
+%ToolbarListBoxType DEFAULT  ('ToolbarListboxClass')
+%ToolbarRelTreeType DEFAULT  ('ToolbarReltreeClass')
+%ToolbarUpdateClassType DEFAULT  ('ToolbarUpdateClass')
+%ToolbarFormVCRType DEFAULT  ('ToolbarFormVCRClass')
+%OverrideAbcSettings LONG  (0)
+%AbcSourceLocation DEFAULT  ('LINK')
+%AbcLibraryName DEFAULT  ('')
+%AppTemplateFamily DEFAULT  ('ABC')
+%CWTemplateVersion DEFAULT  ('v11.0')
+%ABCVersion DEFAULT  ('11000')
+[PERSIST]
+%SaveCreateLocalMap DEFAULT  ('1')
+%GenerationCompleted DEPEND %Module DEFAULT TIMES 4
+WHEN  ('FlatSerializer.CLW') ('1')
+WHEN  ('FlatSerializer.clw') ('1')
+WHEN  ('TestApp.clw') ('1')
+WHEN  ('Tests.clw') ('1')
+
+%LastTarget32 DEFAULT  ('1')
+%LastProgramExtension DEFAULT  ('EXE')
+%LastApplicationDebug DEFAULT  ('1')
+%LastApplicationLocalLibrary DEFAULT  ('')
+[PROJECT]
+-- OUTPUTPATH L:\c11\sca\LibSrc\FlatSerializer
+#system win32 exe
+#model clarion dll
+#pragma debug(vid=>full)
+#pragma define(_ABCDllMode_=>0) -- GENERATED
+#pragma define(_ABCLinkMode_=>1) -- GENERATED
+#compile "TestApp.clw" -- GENERATED
+#compile "Tests.clw" -- GENERATED
+#compile "FlatSerializer.clw" -- GENERATED
+#compile "TestApp_BC0.CLW" -- GENERATED
+#compile "TESTAPP_BC.CLW" -- GENERATED
+#pragma link("C%V%tps%X%%L%.lib") -- GENERATED
+#link "TestApp.EXE"
+[PROGRAM]
+[COMMON]
+FROM ABC ABC
+MODIFIED '2021/07/14' '13:14:31'
+[EMBED]
+EMBED %GlobalMap
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 4000
+PROPERTY:END
+StringToFile(STRING pStr,STRING pFileName)
+DebugView(STRING pStr)
+MODULE('win32')
+  DebugViewApi(*CSTRING cStr),PASCAL,RAW,NAME('OutputDebugStringA')      
+END
+[END]
+EMBED %ProgramProcedures
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 4000
+PROPERTY:END
+StringToFile        PROCEDURE(STRING pStr,STRING pFileName)
+bufSize               EQUATE(32768)
+dosFile               FILE,DRIVER('DOS'),CREATE
+buf                     RECORD;STRING(bufSize).
+                      END
+pos                   LONG(1)
+  CODE  
+  dosFile{PROP:Name} = pFileName
+  CREATE(dosFile)
+  IF ERRORCODE() THEN STOP(ERRORCODE()&' '&ERROR()&' '&ERRORFILE());RETURN.
+  OPEN(dosFile)
+  LOOP UNTIL pos > LEN(pStr)
+    dosFile.Buf = pStr[ pos : LEN(pStr) ]
+    ADD(dosFile,CHOOSE(pos + bufSize > LEN(pStr), |
+        LEN(pStr) - pos + 1, |
+        bufSize))
+    pos += bufSize
+  .
+  CLOSE(dosfile)
+    
+DebugView           PROCEDURE(STRING pStr)
+tcstr                 CSTRING(SIZE(pStr)+3)
+  CODE
+  tcstr = '|'&pStr&'|'
+  DebugViewApi(tcstr)
+[END]
+EMBED %AfterGlobalIncludes
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 4000
+PROPERTY:END
+INCLUDE('FlatSerializer.inc'),ONCE
+[END]
+[END]
+[END]
+[MODULE]
+NAME 'Tests.clw'
+[COMMON]
+FROM ABC GENERATED
+MODIFIED '2021/06/12' '11:00:56'
+[PROCEDURE]
+NAME Tests
+[COMMON]
+FROM ABC Source
+MODIFIED '2021/10/17' '10:10:22'
+[FILES]
+[OTHERS]
+Orders
+[PROMPTS]
+%GenerateOpenClose LONG  (1)
+%GenerateSaveRestore LONG  (0)
+[EMBED]
+EMBED %DataSection
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 1300
+PROPERTY:END
+  MAP
+AssertEqual PROCEDURE(? pExpected,? pActual,STRING pInfo),LONG,PROC
+  END  
+
+TestsResult             ANY
+[END]
+EMBED %ProcessedCode
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 5000
+PROPERTY:END
+  
+  TestsResult = FORMAT(TODAY(),@D10)&' '&FORMAT(CLOCK(),@T04)
+  
+  DO TestGroup
+  DO TestQueue 
+  DO TestQueueWithSeps
+  DO TestFile
+  DO TestGroupWOQuotes
+  DO TestGroupWPrefix
+  DO TestGroupKeepPrefix
+  
+  DO TestDesGroupTabs
+  DO TestDesGroupComas
+  DO TestDesQueue
+  DO TestDesFile
+  DO TestDesGroupTabsKeepPrefix
+  
+  DO TestDesWithTitles
+  DO TestDesWithAlias 
+  DO TestDesOneColumn
+  DO TestDesExcelFormula
+  
+  DO TestSaveStringToFile 
+  DO TestLoadStringFromFile 
+
+  DO TestFileFromToTextFile
+  
+  DO WSTest   
+  
+  DO Test100k
+    
+  DebugView('All tests done')
+  
+  !StringToFile(TestsResult,'TestsResult.txt')
+  !RUN('TestsResult.txt')
+[END]
+EMBED %LocalProcedures
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 5000
+PROPERTY:END
+
+AssertEqual         PROCEDURE(? pExpected,? pActual,STRING pInfo)!,LONG,PROC
+TestResult ANY
+  CODE 
+  
+  TestResult = CHOOSE(pExpected = pActual,'ok','--')&'<9>'& |
+      pInfo&'<13,10>' & |
+      'Exp: <'&pExpected&'>'&'<13,10>'& |
+      'Act: <'&pActual&'>' & |
+      '<13,10>'
+  
+  DebugView(TestResult)
+  
+  IF pExpected <> pActual THEN 
+    SETCLIPBOARD(TestResult)
+    STOP(TestResult)
+  .
+  
+  TestsResult =  CHOOSE(TestsResult = '','',TestsResult&'<13,10>')& |         
+      TestResult  
+  
+  RETURN CHOOSE(pExpected = pActual)
+[END]
+EMBED %ProcedureRoutines
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 3500
+PROPERTY:END
+
+TestGroup           ROUTINE  
+  DATA
+gr  GROUP 
+Num   LONG 
+Name  STRING(30),NAME('Name') 
+DateTime  GROUP 
+Date        DATE,NAME('Date|Attribute') 
+Time        TIME 
+          .
+Excluded1 STRING(10) 
+Name2 STRING(20)
+Excluded2 STRING(10) 
+Money DECIMAL(15,2) 
+    END
+fs  FlatSerializer
+names   ANY
+values  ANY
+groupnv ANY
+  CODE  
+  
+  !Arrange
+  CLEAR(gr)
+  gr.Num = 1234567890
+  gr.Name = 'Name Abc Def'
+  gr.DateTime.Date = DATE(11,28,2021)
+  gr.DateTime.Time = 1+15*60*60*100+16*60*100+17*100 !15:16:17  
+  gr.Excluded1 = 'Something1'
+  gr.Name2 = 'Name 2 Def'
+  gr.Excluded2 = 'Something2'
+  gr.Money = 1234567.89
+  
+  !Act
+  fs.Init
+  fs.AddExcludedFieldByName('excluded1')  
+  fs.AddExcludedFieldByReference(gr.DateTime)
+  fs.AddExcludedFieldByReference(gr.Excluded2)
+  names = fs.SerializeGroupNames(gr)
+  values = fs.SerializeGroupValues(gr)
+  groupnv = fs.SerializeGroup(gr)
+  !Assert
+  AssertEqual('NUM,Name,Date,TIME,NAME2,MONEY',names,'TestGroup: Group names')
+  AssertEqual('1234567890,"Name Abc Def",2021-11-28,15:16:17,"Name 2 Def",1234567.89',values,'TestGroup: Group values') 
+  AssertEqual('NUM,Name,Date,TIME,NAME2,MONEY<13,10>1234567890,"Name Abc Def",2021-11-28,15:16:17,"Name 2 Def",1234567.89<13,10>',groupnv,'TestGroup: Group names and values') 
+  
+TestQueue           ROUTINE  
+  DATA
+qu  QUEUE
+Num   LONG
+Name  STRING(30),NAME('Name')
+DateTime  GROUP
+Date        DATE,NAME('Date|Attribute')
+Time        TIME 
+          .
+Excluded1 STRING(10)
+Name2 STRING(20)
+Excluded2 STRING(10) 
+Money DECIMAL(15,2)
+    END
+fs  FlatSerializer
+serq    ANY
+  CODE  
+  
+  !Arrange
+  CLEAR(qu)
+  qu.Num = 1234567890
+  qu.Name = 'Name Abc Def'
+  qu.DateTime.Date = DATE(11,28,2021)
+  qu.DateTime.Time = 1+15*60*60*100+16*60*100+17*100 !15:16:17  
+  qu.Excluded1 = 'Something1'
+  qu.Name2 = 'Name 2 Def'
+  qu.Excluded2 = 'Something2'
+  qu.Money = 1234567.89
+  ADD(qu)
+  CLEAR(qu)
+  qu.Num = 2034567890
+  qu.Name = '2 Name Abc Def'
+  qu.DateTime.Date = DATE(11,28,2022)
+  qu.DateTime.Time = 1+22*60*60*100+16*60*100+17*100 !15:16:17  
+  qu.Excluded1 = 'Something21'
+  qu.Name2 = '2 Name 2 Def'
+  qu.Excluded2 = 'Something22'
+  qu.Money = 21234567.89
+  ADD(qu)
+  
+  !Act
+  fs.Init
+  fs.AddExcludedFieldByName('excluded1')  
+  fs.AddExcludedFieldByReference(qu.DateTime)
+  fs.AddExcludedFieldByReference(qu.Excluded2)
+  serq = fs.SerializeQueue(qu)
+  !Assert
+  AssertEqual('NUM,Name,Date,TIME,NAME2,MONEY<13,10>1234567890,"Name Abc Def",2021-11-28,15:16:17,"Name 2 Def",1234567.89<13,10>2034567890,"2 Name Abc Def",2022-11-28,22:16:17,"2 Name 2 Def",21234567.89<13,10>',serq,'TestQueue')
+
+TestQueueWithSeps   ROUTINE  
+  DATA
+qu  QUEUE
+Num   LONG
+Name  STRING(30),NAME('Name')
+DateTime  GROUP
+Date        DATE,NAME('Date|Attribute')
+Time        TIME 
+          .
+Excluded1 STRING(10)
+Name2 STRING(40)
+Excluded2 STRING(10) 
+Money DECIMAL(15,2)
+    END
+fs  FlatSerializer
+serq    ANY
+  CODE  
+  
+  !Arrange
+  CLEAR(qu)
+  qu.Num = 1234567890
+  qu.Name = 'Name Abc 1" Def'
+  qu.DateTime.Date = DATE(11,28,2021)
+  qu.DateTime.Time = 1+15*60*60*100+16*60*100+17*100 !15:16:17  
+  qu.Excluded1 = 'Something1'
+  qu.Name2 = 'Name 2 Def'
+  qu.Excluded2 = 'Something2'
+  qu.Money = 1234567.89
+  ADD(qu)
+  CLEAR(qu)
+  qu.Num = 2034567890
+  qu.Name = '2 Name,Abc<13,10>Def'
+  qu.DateTime.Date = DATE(11,28,2022)
+  qu.DateTime.Time = 1+22*60*60*100+16*60*100+17*100 !15:16:17  
+  qu.Excluded1 = 'Something21'
+  qu.Name2 = '="1234567890,1234567890<13,10>1234567980"'
+  qu.Excluded2 = 'Something22'
+  qu.Money = 21234567.89
+  ADD(qu)
+  
+  !Act
+  fs.Init
+  fs.AddExcludedFieldByName('excluded1')  
+  fs.AddExcludedFieldByReference(qu.DateTime)
+  fs.AddExcludedFieldByReference(qu.Excluded2)
+  serq = fs.SerializeQueue(qu)
+  !Assert
+  AssertEqual('NUM,Name,Date,TIME,NAME2,MONEY<13,10>1234567890,"Name Abc 1"" Def",2021-11-28,15:16:17,"Name 2 Def",1234567.89<13,10>2034567890,"2 Name,Abc<13,10>Def",2022-11-28,22:16:17,="1234567890 1234567890 1234567980",21234567.89<13,10>',serq,'TestQueueWithSeps')
+
+TestFile            ROUTINE  
+  DATA
+fs  FlatSerializer
+serf    ANY
+  CODE  
+  
+  !Arrange
+  DO OpenFiles 
+
+  !Act
+  fs.Init
+  fs.AddExcludedFieldByReference(ORD:CustOrderNumbers)
+  serf = fs.SerializeFile(Orders,ORD:KeyOrderDate)
+  !Assert
+  AssertEqual('CUSTNUMBER,ORDERNUMBER,INVOICENUMBER,ORDERDATE,SAMENAME,SHIPTONAME,SAMEADD,SHIPADDRESS1,SHIPADDRESS2,SHIPCITY,SHIPSTATE,SHIPZIP,ORDERSHIPPED,ORDERNOTE<13,10>' & |
+      '2,1,5,1996-10-10,1,"Charmaine Curry",1,"150 E. Sample Road","Suite 100","Pompano Beach","FL","33064",0,""<13,10>' & |
+      '4,1,1,1996-10-10,1,"Larry Brown",1,"45 NW 35th Street","Suite 209","Boca Raton","FL","33015",0,""<13,10>' & |
+      '4,2,2,1996-10-10,1,"Larry Brown",1,"45 NW 35th Street","Suite 209","Boca Raton","FL","33015",0,""<13,10>' & |
+      '9,1,6,1996-10-10,1,"Harvey Henry",1,"320 Centerbury Court","Apt.23","Cincinnati","OH","45246",0,""<13,10>' & |
+      '13,1,4,1996-10-10,1,"John Stoker",1,"34 Lyons Road","Apt.# 312","Margate","FL","33070",1,"Picked up by customer"<13,10>' & |
+      '1,1,8,1996-10-11,1,"Carl Wright",1,"1500 E. Sample Road","Suite 302","Pompano Beach","FL","33069",0,""<13,10>' & |
+      '10,1,7,1996-10-11,1,"Gloria Edwards",1,"3812 Sheppard Crossing Way","","Stone Mountain","GA","30083",0,""<13,10>' & |
+      '10,2,10,1996-10-12,1,"Gloria Edwards",1,"3812 Sheppard Crossing Way","","Stone Mountain","GA","30083",0,""<13,10>' & |
+      '12,1,11,1996-10-12,1,"William Zyle",1,"7831 Somerset Drive","Apt.# 210","Fort Lauderdale","FL","33012",0,""<13,10>' & |
+      '14,1,9,1996-10-12,1,"Gregory King",1,"1200 S.W. 24th Avenue","Suite 109","Deerfield Beach","FL","33442",0,""<13,10>' & |
+      '4,3,12,1996-10-14,1,"Larry Brown",1,"45 NW 35th Street","Suite 209","Boca Raton","FL","33015",0,""<13,10>' & |
+      '3,1,16,1996-10-28,0,"Audrey Mason",0,"120 Carver Loop","Apt. 19F","Bronx","NY","10475",0,""<13,10>' & |
+      '5,1,15,1996-10-28,1,"Michael Johnson",1,"45 Merry Road","Apt. # 35","Boca Raton","FL","33214",0,"Out of stock - backordered"<13,10>' & |
+      '6,1,13,1996-10-28,1,"Mary Edwards",1,"67 Old England Road","Suite 29","Cooper City","FL","33034",0,""<13,10>' & |
+      '7,1,17,1996-10-28,1,"Joseph Kennedy",1,"23 West Drive","","Batesville","AR","72503",0,""<13,10>' & |
+      '8,1,14,1996-10-28,1,"Phillip Jacobs",1,"15 Fisher Avenue","","White Plains","NY","10606",0,""<13,10>' & |
+      '11,1,18,1996-10-28,0,"Yule Brenner",0,"120 NW 15 Street","Apt.#216","Fort Lauderdale","FL","33011",0,"One item on backorder"<13,10>' & |
+      '4,4,19,2003-10-29,1,"Larry Brown",1,"45 NW 35th Street","Suite 209","Boca Raton","FL","33015",0,""<13,10>',serf,'TestFile')
+  
+  DO CloseFiles 
+  
+TestGroupWOQuotes   ROUTINE  
+  DATA
+gr  GROUP 
+Num   LONG 
+Name  STRING(30),NAME('Name') 
+DateTime  GROUP 
+Date        DATE,NAME('Date|Attribute') 
+Time        TIME 
+          .
+Excluded1 STRING(10) 
+Name2 STRING(20)
+Excluded2 STRING(10) 
+Money DECIMAL(15,2) 
+    END
+fs  FlatSerializer
+names   ANY
+values  ANY
+  CODE  
+  
+  !Arrange
+  CLEAR(gr)
+  gr.Num = 1234567890
+  gr.Name = 'Name Abc Def'
+  gr.DateTime.Date = DATE(11,28,2021)
+  gr.DateTime.Time = 1+15*60*60*100+16*60*100+17*100 !15:16:17  
+  gr.Excluded1 = 'Something1'
+  gr.Name2 = 'Name 2"<9>Def'
+  gr.Excluded2 = 'Something2'
+  gr.Money = 1234567.89
+  
+  !Act
+  fs.Init
+  fs.AddExcludedFieldByName('excluded1')  
+  fs.AddExcludedFieldByReference(gr.DateTime)
+  fs.AddExcludedFieldByReference(gr.Excluded2)
+  fs.SetAlwaysQuoteStrings(0)
+  names = fs.SerializeGroupNames(gr)
+  values = fs.SerializeGroupValues(gr)
+  !Assert
+  AssertEqual('NUM,Name,Date,TIME,NAME2,MONEY',names,'TestGroupWOQuotes Group names')
+  AssertEqual('1234567890,Name Abc Def,2021-11-28,15:16:17,"Name 2""<9>Def",1234567.89',values,'TestGroupWOQuotes Group values') 
+  
+TestGroupWPrefix    ROUTINE  
+  DATA
+gr  GROUP,PRE(grx)
+Num   LONG 
+Name  STRING(30),NAME('Name') 
+DateTime  GROUP 
+Date        DATE,NAME('Date|Attribute') 
+Time        TIME 
+          .
+Excluded1 STRING(10) 
+Name2 STRING(20)
+Excluded2 STRING(10) 
+Money DECIMAL(15,2) 
+    END
+fs  FlatSerializer
+names   ANY
+values  ANY
+groupnv ANY
+  CODE  
+  
+  !Arrange
+  CLEAR(gr)
+  gr.Num = 1234567890
+  gr.Name = 'Name Abc Def'
+  gr.DateTime.Date = DATE(11,28,2021)
+  gr.DateTime.Time = 1+15*60*60*100+16*60*100+17*100 !15:16:17  
+  gr.Excluded1 = 'Something1'
+  gr.Name2 = 'Name 2 Def'
+  gr.Excluded2 = 'Something2'
+  gr.Money = 1234567.89
+  
+  !Act
+  fs.Init
+  fs.AddExcludedFieldByName('excluded1')  
+  fs.AddExcludedFieldByReference(gr.DateTime)
+  fs.AddExcludedFieldByReference(gr.Excluded2)
+  names = fs.SerializeGroupNames(gr)
+  values = fs.SerializeGroupValues(gr)
+  groupnv = fs.SerializeGroup(gr)
+  !Assert
+  AssertEqual('NUM,Name,Date,TIME,NAME2,MONEY',names,'TestGroupWPrefix: Group names')
+  AssertEqual('1234567890,"Name Abc Def",2021-11-28,15:16:17,"Name 2 Def",1234567.89',values,'TestGroupWPrefix: Group values') 
+  AssertEqual('NUM,Name,Date,TIME,NAME2,MONEY<13,10>1234567890,"Name Abc Def",2021-11-28,15:16:17,"Name 2 Def",1234567.89<13,10>',groupnv,'TestGroupWPrefix: Group names and values') 
+  
+TestGroupKeepPrefix ROUTINE  
+  DATA
+gr  GROUP,PRE(grx)
+Num   LONG 
+Name  STRING(30)
+DateTime  GROUP 
+Date        DATE
+Time        TIME 
+          .
+Excluded1 STRING(10) 
+Name2 STRING(20)
+Excluded2 STRING(10) 
+Money DECIMAL(15,2) 
+    END
+fs  FlatSerializer
+names   ANY
+values  ANY
+groupnv ANY
+  CODE  
+  
+  !Arrange
+  CLEAR(gr)
+  gr.Num = 1234567890
+  gr.Name = 'Name Abc Def'
+  gr.DateTime.Date = DATE(11,28,2021)
+  gr.DateTime.Time = 1+15*60*60*100+16*60*100+17*100 !15:16:17  
+  gr.Excluded1 = 'Something1'
+  gr.Name2 = 'Name 2 Def'
+  gr.Excluded2 = 'Something2'
+  gr.Money = 1234567.89
+  
+  !Act
+  fs.Init
+  fs.AddExcludedFieldByName('GRX:excluded1')  
+  fs.AddExcludedFieldByReference(gr.DateTime)
+  fs.AddExcludedFieldByReference(gr.Excluded2)
+  fs.SetRemovePrefixes(FALSE)
+  names = fs.SerializeGroupNames(gr)
+  values = fs.SerializeGroupValues(gr)
+  groupnv = fs.SerializeGroup(gr)
+  !Assert
+  AssertEqual('GRX:NUM,GRX:NAME,GRX:DATE,GRX:TIME,GRX:NAME2,GRX:MONEY',names,'TestGroupKeepPrefix: Group names')
+  AssertEqual('1234567890,"Name Abc Def",2021-11-28,15:16:17,"Name 2 Def",1234567.89',values,'TestGroupKeepPrefix: Group values') 
+  AssertEqual('GRX:NUM,GRX:NAME,GRX:DATE,GRX:TIME,GRX:NAME2,GRX:MONEY<13,10>1234567890,"Name Abc Def",2021-11-28,15:16:17,"Name 2 Def",1234567.89<13,10>',groupnv,'TestGroupKeepPrefix: Group names and values') 
+
+
+TestDesGroupTabs    ROUTINE  
+  DATA
+gr  GROUP 
+Num   LONG 
+Name  STRING(30),NAME('Name') 
+DateTime  GROUP 
+Date        DATE,NAME('Date|Attribute') 
+Time        TIME 
+          .
+Excluded1 STRING(10) 
+Name2 STRING(20)
+Excluded2 STRING(10) 
+Money DECIMAL(15,2) 
+    END
+fs  FlatSerializer
+names   ANY
+values  ANY
+  CODE  
+  
+  !Arrange
+  CLEAR(gr)
+  
+  fs.InitTSV
+  fs.LoadString('NUM<9>Name<9>Date<9>TIME<9>NAME2<9>MONEY<13,10>1234567890<9>"Name Abc 1"" Def"<9>2021-11-28<9>15:16:17<9>"Name"""" 2 Def"""""<9>1234567.89')
+
+  !Act
+  fs.DeSerializeToGroup(gr)
+  
+  
+  !Assert      
+  AssertEqual('1234567890',gr.Num,'TestDesGroup')
+  AssertEqual('Name Abc 1" Def',gr.Name,'TestDesGroup')
+  AssertEqual(DATE(11,28,2021),gr.DateTime.Date,'TestDesGroup')
+  AssertEqual(1+15*60*60*100+16*60*100+17*100,gr.DateTime.Time,'TestDesGroup')
+  AssertEqual('Name"" 2 Def""',gr.Name2,'TestDesGroup')
+  AssertEqual('1234567.89',gr.Money,'TestDesGroup')
+  AssertEqual('Name"" 2 Def""',fs.GetValueByName('Name2'),'TestDesGroup')
+
+TestDesGroupComas   ROUTINE  
+  DATA
+gr  GROUP 
+Num   LONG 
+Name  STRING(30),NAME('Name') 
+DateTime  GROUP 
+Date        DATE,NAME('Date|Attribute') 
+Time        TIME 
+          .
+Excluded1 STRING(10) 
+Name2 STRING(20)
+Excluded2 STRING(10) 
+Money DECIMAL(15,2) 
+    END
+fs  FlatSerializer
+names   ANY
+values  ANY
+  CODE  
+  
+  !Arrange
+  CLEAR(gr)
+  
+  fs.Init  
+  fs.LoadString('NUM,Name,Date,TIME,NAME2,MONEY<13,10>1234567890,"Name, Abc 1"" Def",2021-11-28,15:16:17,"Name"""" 2 Def""""",1234567.89')
+  
+  !Act
+  fs.DeSerializeToGroup(gr)
+  
+  
+  !Assert      
+  AssertEqual('1234567890',gr.Num,'TestDesGroup')
+  AssertEqual('Name, Abc 1" Def',gr.Name,'TestDesGroup')
+  AssertEqual(DATE(11,28,2021),gr.DateTime.Date,'TestDesGroup')
+  AssertEqual(1+15*60*60*100+16*60*100+17*100,gr.DateTime.Time,'TestDesGroup')
+  AssertEqual('Name"" 2 Def""',gr.Name2,'TestDesGroup')
+  AssertEqual('1234567.89',gr.Money,'TestDesGroup')
+  AssertEqual('Name"" 2 Def""',fs.GetValueByName('Name2'),'TestDesGroup')
+
+TestDesQueue        ROUTINE  
+  DATA
+qu  QUEUE
+Num   LONG
+Name  STRING(30),NAME('Name')
+DateTime  GROUP
+Date        DATE,NAME('Date|Attribute')
+Time        TIME 
+          .
+Excluded1 STRING(10)
+Name2 STRING(20)
+Excluded2 STRING(10) 
+Money DECIMAL(15,2)
+    END
+fs  FlatSerializer
+serq    ANY
+  CODE  
+  
+  !Arrange
+  FREE(qu)  
+  
+  !Act
+  fs.InitTSV
+  fs.LoadString('NUM<9>Name<9>Date<9>TIME<9>NAME2<9>MONEY<13,10>1234567890<9>"Name Abc Def"<9>2021-11-28<9>15:16:17<9>"Name 2 Def"<9>1234567.89<13,10>2034567890<9>"2 Name Abc Def"<9>2022-11-28<9>22:16:17<9>"2 Name 2 Def"<9>21234567.89')
+  fs.DeserializeToQueue(qu)
+  
+  !Assert    
+  AssertEqual(2,RECORDS(qu),'TestDesQueue')
+  GET(qu,2)
+  
+  AssertEqual('2034567890',qu.Num,'TestDesQueue')
+  AssertEqual('2 Name Abc Def',qu.Name,'TestDesQueue')
+  AssertEqual(DATE(11,28,2022),qu.DateTime.Date,'TestDesQueue')
+  AssertEqual(1+22*60*60*100+16*60*100+17*100,qu.DateTime.Time,'TestDesQueue')
+  AssertEqual('2 Name 2 Def',qu.Name2,'TestDesQueue')
+  AssertEqual(21234567.89,qu.Money,'TestDesQueue')
+  AssertEqual('2 Name 2 Def',fs.GetValueByName('Name2',2),'TestDesQueue')
+  
+  
+TestDesFile         ROUTINE  
+  DATA
+fs  FlatSerializer
+serf    ANY
+  CODE  
+  
+  !Arrange
+  Orders{PROP:Name} = 'ORDERS.TMP'
+  CREATE(Orders)  
+  DO OpenFiles 
+
+  !Act
+  fs.InitTSV
+  fs.AddExcludedFieldByReference(ORD:CustOrderNumbers)
+  fs.LoadString('CUSTNUMBER<9>ORDERNUMBER<9>INVOICENUMBER<9>ORDERDATE<9>SAMENAME<9>SHIPTONAME<9>SAMEADD<9>SHIPADDRESS1<9>SHIPADDRESS2<9>SHIPCITY<9>SHIPSTATE<9>SHIPZIP<9>ORDERSHIPPED<9>ORDERNOTE<13,10>' & |
+      '2<9>1<9>5<9>1996-10-10<9>1<9>"Charmaine Curry"<9>1<9>"150 E. Sample Road"<9>"Suite 100"<9>"Pompano Beach"<9>"FL"<9>"33064"<9>0<9>""<13,10>' & |
+      'EMPTY LINE<13,10>' & |
+      '4<9>1<9>1<9>1996-10-10<9>1<9>"Larry Brown"<9>1<9>"45 NW 35th Street"<9>"Suite 209"<9>"Boca Raton"<9>"FL"<9>"33015"<9>0<9>""<13,10>')    
+  fs.DeSerializeToFile(Orders)
+  
+  !Assert
+  CLEAR(ORD:Record)
+  SET(ORD:KeyOrderDate)
+  NEXT(Orders)
+  NEXT(Orders)
+  
+  AssertEqual(4,ORD:CustNumber,'TestDesFile')
+  AssertEqual(1,ORD:OrderNumber,'TestDesFile')
+  AssertEqual(1,ORD:InvoiceNumber,'TestDesFile')
+  AssertEqual(DATE(10,10,1996),ORD:OrderDate,'TestDesFile')
+  AssertEqual(4,ORD:CustNumber,'TestDesFile')
+  AssertEqual('Larry Brown',ORD:ShipToName,'TestDesFile')
+  
+  DO CloseFiles 
+  REMOVE('ORDERS.TMP')
+  
+TestDesGroupTabsKeepPrefix  ROUTINE  
+  DATA
+gr  GROUP,PRE(GRX)
+Num   LONG 
+Name  STRING(30)
+DateTime  GROUP 
+Date        DATE
+Time        TIME 
+          .
+Excluded1 STRING(10) 
+Name2 STRING(20)
+Excluded2 STRING(10) 
+Money DECIMAL(15,2) 
+    END
+fs  FlatSerializer
+names   ANY
+values  ANY
+  CODE  
+  
+  !Arrange
+  CLEAR(gr)
+  
+  fs.InitTSV
+  fs.SetRemovePrefixes(FALSE)
+  fs.LoadString('GRX:NUM<9>GRX:Name<9>GRX:Date<9>GRX:TIME<9>GRX:NAME2<9>GRX:MONEY<13,10>1234567890<9>"Name Abc 1"" Def"<9>2021-11-28<9>15:16:17<9>"Name"""" 2 Def"""""<9>1234567.89')
+
+  !Act
+  fs.DeSerializeToGroup(gr)
+  
+  
+  !Assert      
+  AssertEqual('1234567890',gr.Num,'TestDesGroupTabsKeepPrefix')
+  AssertEqual('Name Abc 1" Def',gr.Name,'TestDesGroupTabsKeepPrefix')
+  AssertEqual(DATE(11,28,2021),gr.DateTime.Date,'TestDesGroupTabsKeepPrefix')
+  AssertEqual(1+15*60*60*100+16*60*100+17*100,gr.DateTime.Time,'TestDesGroupTabsKeepPrefix')
+  AssertEqual('Name"" 2 Def""',gr.Name2,'TestDesGroupTabsKeepPrefix')
+  AssertEqual('1234567.89',gr.Money,'TestDesGroupTabsKeepPrefix')
+  AssertEqual('Name"" 2 Def""',fs.GetValueByName('GRX:Name2'),'TestDesGroupTabsKeepPrefix') 
+
+TestDesWithTitles   ROUTINE  
+  DATA
+gr  GROUP 
+Num   LONG 
+Name  STRING(30),NAME('Name') 
+DateTime  GROUP 
+Date        DATE,NAME('Date|Attribute') 
+Time        TIME 
+          .
+Excluded1 STRING(10) 
+Name2 STRING(20)
+Excluded2 STRING(10) 
+Money DECIMAL(15,2) 
+    END
+fs  FlatSerializer
+names   ANY
+values  ANY
+  CODE  
+  
+  !Arrange
+  CLEAR(gr)
+  
+  fs.InitTSV
+  fs.LoadString('This is a CSV String with titles<13,10>Line 2<13,10,13,10>NUM<9>Name<9>Date<9>TIME<9>NAME2<9>MONEY<13,10>1234567890<9>"Name Abc 1"" Def"<9>2021-11-28<9>15:16:17<9>"Name"""" 2 Def"""""<9>1234567.89')
+
+  !Act
+  fs.DeSerializeToGroup(gr)  
+  
+  !Assert      
+  AssertEqual('1234567890',gr.Num,'TestDesWithTitles')
+  AssertEqual('Name Abc 1" Def',gr.Name,'TestDesWithTitles')
+  AssertEqual(DATE(11,28,2021),gr.DateTime.Date,'TestDesWithTitles')
+  AssertEqual(1+15*60*60*100+16*60*100+17*100,gr.DateTime.Time,'TestDesWithTitles')
+  AssertEqual('Name"" 2 Def""',gr.Name2,'TestDesWithTitles')
+  AssertEqual('1234567.89',gr.Money,'TestDesWithTitles')
+  AssertEqual('Name"" 2 Def""',fs.GetValueByName('Name2'),'TestDesWithTitles')
+
+TestDesWithAlias    ROUTINE  
+  DATA
+gr  GROUP 
+Num   LONG 
+Name  STRING(30),NAME('Name') 
+DateTime  GROUP 
+Date        DATE,NAME('Date|Attribute') 
+Time        TIME 
+          .
+Excluded1 STRING(10) 
+Name2 STRING(20)
+Excluded2 STRING(10) 
+Money DECIMAL(15,2) 
+    END
+fs  FlatSerializer
+names   ANY
+values  ANY
+  CODE  
+  
+  !Arrange
+  CLEAR(gr)
+  
+  fs.InitTSV
+  fs.AddFieldAliasByReference(gr.Name,'This is a Name')
+  fs.LoadString('NUM<9>This is a Name<9>Date<9>TIME<9>NAME2<9>MONEY<13,10>1234567890<9>"Name Abc 1"" Def"<9>2021-11-28<9>15:16:17<9>"Name"""" 2 Def"""""<9>1234567.89')
+
+  !Act
+  fs.DeSerializeToGroup(gr)
+  
+  
+  !Assert      
+  AssertEqual('1234567890',gr.Num,'TestDesWithAlias')
+  AssertEqual('Name Abc 1" Def',gr.Name,'TestDesWithAlias')
+  AssertEqual(DATE(11,28,2021),gr.DateTime.Date,'TestDesWithAlias')
+  AssertEqual(1+15*60*60*100+16*60*100+17*100,gr.DateTime.Time,'TestDesWithAlias')
+  AssertEqual('Name"" 2 Def""',gr.Name2,'TestDesWithAlias')
+  AssertEqual('1234567.89',gr.Money,'TestDesWithAlias')
+  AssertEqual('Name"" 2 Def""',fs.GetValueByName('Name2'),'TestDesWithAlias')
+  
+TestDesOneColumn    ROUTINE
+  DATA
+gr  GROUP 
+Name  STRING(30),NAME('Name') 
+    END
+fs  FlatSerializer
+  CODE  
+  
+  !Arrange
+  CLEAR(gr)
+  
+  fs.Init  
+  fs.SetReadLinesWithoutColumnSeparators(TRUE)
+  fs.LoadString('Name<13,10>One Name')
+
+  !Act
+  fs.DeSerializeToGroup(gr)  
+  
+  !Assert      
+  AssertEqual('One Name',gr.Name,'TestDesOneColumn')  
+  
+TestDesExcelFormula ROUTINE  
+  
+  DATA
+gr  GROUP 
+NUM   LONG
+Name  STRING(60)
+BigNumber DECIMAL(24,2)
+NameWithDash  STRING(60)
+Name2 STRING(40)
+Number2   LONG
+    END
+fs  FlatSerializer
+names   ANY
+values  ANY
+bignum  DECIMAL(24,2)
+  CODE  
+  
+  !Arrange
+  CLEAR(gr)
+  
+  fs.InitTSV
+  fs.LoadString('NUM<9>NAME<9>BIGNUMBER<9>NAMEWITHDASH<9>NAME2<9>NUMBER2<13,10>' & | 
+      '1234<9>="This is an Excel string<9>formula""constant"<9>12345679801234567980.12<9>="1234-12-23"<9>Some "" name<9>22222')
+  bignum = 12345679801234567980.12
+  !Act
+  fs.DeSerializeToGroup(gr)
+  
+  
+  !Assert      
+  AssertEqual('1234',gr.Num,'TestDesExcelFormula')
+  AssertEqual('This is an Excel string<9>formula"constant',gr.Name,'TestDesExcelFormula')
+  AssertEqual(FORMAT(bignum,@N_24.2),FORMAT(gr.BigNumber,@N_24.2),'TestDesExcelFormula')
+  AssertEqual('1234-12-23',gr.NameWithDash,'TestDesExcelFormula')
+  AssertEqual('Some " name',gr.Name2,'TestDesExcelFormula')
+  AssertEqual(22222,gr.Number2,'TestDesExcelFormula')
+  
+TestSaveStringToFile    ROUTINE
+  DATA
+fs  FlatSerializer
+qf  QUEUE(FILE:queue)
+    END
+i   LONG
+  CODE
+  
+  !Arrange
+  
+  !Act
+  fs.StringToTextFile('','file000000.txt')
+  fs.StringToTextFile('1','file000001.txt')
+  fs.StringToTextFile('1<13,10>','file000003.txt')
+  fs.StringToTextFile(ALL('*',10000),'file010000.txt')
+  fs.StringToTextFile(ALL('*',32767),'file032767.txt')
+  fs.StringToTextFile(ALL('*',32768),'file032768.txt')
+  fs.StringToTextFile(ALL('*',32769),'file032769.txt')
+  fs.StringToTextFile(ALL('*',100000),'file100000.txt')
+ 
+  !Assert
+  AssertEqual('0',ERRORCODE()&' '&ERROR()&' '&ERRORFILE(),'TestSaveStringToFile')
+  
+  DIRECTORY(qf,'file*.txt',ff_:NORMAL)
+  LOOP i = 1 TO RECORDS(qf)
+    GET(qf,i) 
+    AssertEqual(SUB(qf.Name,5,6)+0,qf.Size,'TestSaveStringToFile')
+    !Cleanup
+    REMOVE(qf.Name)
+  .
+  
+TestLoadStringFromFile  ROUTINE
+  DATA
+fs  FlatSerializer
+str0    ANY
+str1    ANY
+str3    ANY
+str10000    ANY
+str32767    ANY
+str32768    ANY
+str32769    ANY
+str100000   ANY
+  CODE
+  
+  !Arrange  
+  fs.StringToTextFile('','file000000.txt')
+  fs.StringToTextFile('1','file000001.txt')
+  fs.StringToTextFile('1<13,10>','file000003.txt')
+  fs.StringToTextFile(ALL('*',10000),'file010000.txt')
+  fs.StringToTextFile(ALL('*',32767),'file032767.txt')
+  fs.StringToTextFile(ALL('*',32768),'file032768.txt')
+  fs.StringToTextFile(ALL('*',32769),'file032769.txt')
+  fs.StringToTextFile(ALL('*',100000),'file100000.txt')
+  
+  !Act
+  str0 = fs.StringFromTextFile('file000000.txt')
+  str1 = fs.StringFromTextFile('file000001.txt')
+  str3 = fs.StringFromTextFile('file000003.txt')
+  str10000 = fs.StringFromTextFile('file010000.txt')
+  str32767 = fs.StringFromTextFile('file032767.txt')
+  str32768 = fs.StringFromTextFile('file032768.txt')
+  str32769 = fs.StringFromTextFile('file032769.txt')
+  str100000 = fs.StringFromTextFile('file100000.txt')  
+
+ 
+  !Assert
+  AssertEqual('0',ERRORCODE()&' '&ERROR()&' '&ERRORFILE(),'TestLoadStringFromFile')
+  AssertEqual('',str0,'TestLoadStringFromFile')
+  AssertEqual(0,LEN(str0),'TestLoadStringFromFile')
+  AssertEqual('1',str1,'TestLoadStringFromFile')
+  AssertEqual(1,LEN(str1),'TestLoadStringFromFile')
+  AssertEqual('1<13,10>',str3,'TestLoadStringFromFile')
+  AssertEqual(3,LEN(str3),'TestLoadStringFromFile')
+  AssertEqual( '* ',SUB(str10000,10000,2),'TestLoadStringFromFile')
+  AssertEqual(10000,LEN(str10000),'TestLoadStringFromFile')
+  AssertEqual( '*  ',SUB(str32767,32767,3),'TestLoadStringFromFile')
+  AssertEqual(32767,LEN(str32767),'TestLoadStringFromFile')
+  AssertEqual( '** ',SUB(str32768,32767,3),'TestLoadStringFromFile')
+  AssertEqual(32768,LEN(str32768),'TestLoadStringFromFile')
+  AssertEqual( '***',SUB(str32769,32767,3),'TestLoadStringFromFile')
+  AssertEqual(32769,LEN(str32769),'TestLoadStringFromFile')    
+  AssertEqual( '* ',SUB(str100000,100000,2),'TestLoadStringFromFile')
+  AssertEqual(100000,LEN(str100000),'TestLoadStringFromFile')  
+  
+  !Cleanup
+  REMOVE('file000000.txt')
+  REMOVE('file000001.txt')
+  REMOVE('file000003.txt')
+  REMOVE('file010000.txt')
+  REMOVE('file032767.txt')
+  REMOVE('file032768.txt')
+  REMOVE('file032769.txt')
+  REMOVE('file100000.txt')  
+
+  
+TestFileFromToTextFile  ROUTINE  
+  DATA
+fs  FlatSerializer
+serf    ANY
+serf2   ANY
+  CODE  
+  
+  !Arrange
+  Orders{PROP:Name} = 'ORDERS.TMP'
+  CREATE(Orders)  
+  DO OpenFiles   
+  
+  serf = 'CUSTNUMBER<9>ORDERNUMBER<9>INVOICENUMBER<9>ORDERDATE<9>SAMENAME<9>SHIPTONAME<9>SAMEADD<9>SHIPADDRESS1<9>SHIPADDRESS2<9>SHIPCITY<9>SHIPSTATE<9>SHIPZIP<9>ORDERSHIPPED<9>ORDERNOTE<13,10>' & |
+      '2<9>1<9>5<9>1996-10-10<9>1<9>Charmaine Curry<9>1<9>150 E. Sample Road<9>Suite 100<9>Pompano Beach<9>FL<9>33064<9>0<9><13,10>' & |
+      '4<9>1<9>1<9>1996-10-10<9>1<9>Larry Brown<9>1<9>45 NW 35th Street<9>Suite 209<9>Boca Raton<9>FL<9>33015<9>0<9><13,10>'
+  
+  fs.StringToTextFile(serf,'testfile.txt')  
+
+  !Act
+  fs.InitTSV
+  fs.LoadTextFile('testfile.txt')
+  fs.DeSerializeToFile(Orders)
+  
+  !Assert
+  CLEAR(ORD:Record)
+  SET(ORD:KeyOrderDate)
+  NEXT(Orders)
+  NEXT(Orders)
+  
+  AssertEqual(4,ORD:CustNumber,'TestFileFromToTextFile')
+  AssertEqual(1,ORD:OrderNumber,'TestFileFromToTextFile')
+  AssertEqual(1,ORD:InvoiceNumber,'TestFileFromToTextFile')
+  AssertEqual(DATE(10,10,1996),ORD:OrderDate,'TestFileFromToTextFile')
+  AssertEqual(4,ORD:CustNumber,'TestFileFromToTextFile')
+  AssertEqual('Larry Brown',ORD:ShipToName,'TestFileFromToTextFile')
+  
+  fs.InitTSV
+  fs.AddExcludedFieldByReference(ORD:CustOrderNumbers)  
+  fs.SerializeFileToTextFile(Orders,'testfile2.txt')  
+  
+  serf2 = fs.StringFromTextFile('testfile2.txt')
+  
+  AssertEqual(serf,serf2,'TestFileFromToTextFile')
+  
+  DO CloseFiles 
+  
+  !Cleanup      
+  REMOVE('ORDERS.TMP')
+  REMOVE('testfile.txt')
+  REMOVE('testfile2.txt')
+
+WSTest              ROUTINE     
+  DATA
+LotePagosList   QUEUE,PRE(LPAL)                       !
+Proveedor         LONG,NAME('Proveedor')                !
+Nombre            STRING(80),NAME('Nombre')             !
+Folio             STRING(40),NAME('Folio')              !
+Letra             STRING(10),NAME('Letra')              !
+FechaFactura      DATE,NAME('FechaFactura')             !
+FechaRecibida     DATE,NAME('FechaRecibida')            !
+FechaVencimiento  DATE,NAME('FechaVencimiento')         !
+FechaProcesoLote  DATE,NAME('FechaProcesoLote')         !
+Obs               STRING(200),NAME('Obs')               !
+PagoFactura       DECIMAL(15,2),NAME('PagoFactura')     !
+APagarLote        DECIMAL(15,2),NAME('APagarLote')      !
+DatosPoliza       STRING(200),NAME('DatosPoliza')       !
+Cuenta            STRING(30),NAME('Cuenta')             !
+NombreCuenta      STRING(100),NAME('NombreCuenta')      !
+DivN1             LONG,NAME('DivN1')                    !
+DivN2             LONG,NAME('DivN2')                    !
+Concepto          STRING(100),NAME('Concepto')          !
+Cargo             DECIMAL(15,2),NAME('Cargo')           !
+Abono             DECIMAL(15,2),NAME('Abono')           !
+                END                        
+fs  FlatSerializer
+txt STRING('TITLE TEXT<13,10>'&|
+        'Subttile Text<13,10>'&|
+        'Info Text: 123456<13,10>'&|
+        '<13,10>'&|
+        'Proveedor<9>Nombre<9>Folio<9>Letra<9>F.Fac.<9>F.Rec.<9>F.Ven.<9>F.Pro.<9>Obs.<9>Pago<9>A Pagar<9>Póliza<9>Cuenta<9>Nombre Cuenta<9>CC<9><9>Concepto<9>Cargo<9>Abono<13,10>'&|
+        '213165<9>NAME ABC S DE RL DE CV<9><9><9>27-AGO-21<9><9><9><9><9><9>631.8<9>M:9 D:40 P:24493 30-SEP-21 NAME ABC S DE RL DE CV<13,10>'&|
+        '<9><9><9><9><9><9><9><9><9><9><9><9>="1120-006"<9>HSBC 40-24292609 Mn<9><9><9>98771<9><9>631.8<13,10>'&|
+        '<9><9><9><9><9><9><9><9><9><9><9><9>="6053-000"<9>UNIFORMES Y EQ. DE SEGURIDAD<9>240<9><9>NAME ABC S DE RL DE CV S DE RL DE CV<9>585<9><13,10>'&|
+        '<9><9><9><9><9><9><9><9><9><9><9><9>="1160-008"<9>Iva Provisionado 8%<9><9><9>NAME ABC S DE RL DE CV S DE RL DE CV<9>46.8<9><13,10>'&|
+        '<9><9><9><9><9><9><9><9><9><9><9><9>="1160-008"<9>Iva Provisionado 8%<9><9><9>NAME ABC S DE RL DE CV S DE RL DE CV<9><9>46.8<13,10>'&|
+        '<9><9><9><9><9><9><9><9><9><9><9><9>="1160-018"<9>IVA Acred 8% S/gts y Cpras<9><9><9>NAME ABC S DE RL DE CV S DE RL DE CV<9>46.8<9><13,10>'&|
+        '<13,10>'&|
+        '<9>Total del Lote:<9><9><9><9><9><9><9><9><9>113910.54<13,10>')
+
+  CODE  
+  
+  !Arrange
+  LOCALE('CLAMON','Ene,Feb,Mar,Abr,May,Jun,Jul,Ago,Sep,Oct,Nov,Dic')
+  fs.InitTSV
+  fs.SetDatesPicture('@D7-')
+  fs.AddFieldAliasByReference(LotePagosList.Proveedor,'Proveedor')
+  fs.AddFieldAliasByReference(LotePagosList.Nombre,'Nombre')
+  fs.AddFieldAliasByReference(LotePagosList.Folio,'Folio')
+  fs.AddFieldAliasByReference(LotePagosList.Letra,'Letra')
+  fs.AddFieldAliasByReference(LotePagosList.FechaFactura,'F.Fac.')
+  fs.AddFieldAliasByReference(LotePagosList.FechaRecibida,'F.Rec.')
+  fs.AddFieldAliasByReference(LotePagosList.FechaVencimiento,'F.Ven.')
+  fs.AddFieldAliasByReference(LotePagosList.FechaProcesoLote,'F.Pro.')
+  fs.AddFieldAliasByReference(LotePagosList.Obs,'Obs.')
+  fs.AddFieldAliasByReference(LotePagosList.PagoFactura,'Pago')
+  fs.AddFieldAliasByReference(LotePagosList.APagarLote,'A Pagar	')
+  fs.AddFieldAliasByReference(LotePagosList.DatosPoliza,'Póliza')
+  fs.AddFieldAliasByReference(LotePagosList.Cuenta,'Cuenta')
+  fs.AddFieldAliasByReference(LotePagosList.NombreCuenta,'Nombre Cuenta')
+  fs.AddFieldAliasByReference(LotePagosList.DivN1,'CC')
+  fs.AddFieldAliasByReference(LotePagosList.Concepto,'Concepto')
+  fs.AddFieldAliasByReference(LotePagosList.Cargo,'Cargo')
+  fs.AddFieldAliasByReference(LotePagosList.Abono,'Abono')
+  
+  !Act
+  fs.LoadString(txt)
+  fs.DeserializeToQueue(LotePagosList)  
+  
+  !Assert      
+  GET(LotePagosList,1)
+  AssertEqual('M:9 D:40 P:24493 30-SEP-21 NAME ABC S DE RL DE CV',CLIP(LotePagosList.DatosPoliza),'WSTest')
+  AssertEqual(FORMAT(DATE(8,27,21),@D10),FORMAT(LotePagosList.FechaFactura,@D10),'WSTest')
+  
+  
+Test100k            ROUTINE     
+  DATA
+!Created with CSVParse https://github.com/jslarve/CSVParseClass
+Employees   QUEUE
+EmpID         STRING(20)
+NamePrefix    STRING(10)
+FirstName     STRING(20)
+MiddleInitial STRING(10)
+LastName      STRING(20)
+Gender        STRING(10)
+EMail         STRING(40)
+FathersName   STRING(30)
+MothersName   STRING(30)
+MothersMaidenName STRING(20)
+DateofBirth   STRING(20)
+TimeofBirth   STRING(20)
+AgeinYrs      STRING(20)
+WeightinKgs   STRING(10)
+DateofJoining STRING(20)
+QuarterofJoining  STRING(10)
+HalfofJoining STRING(10)
+YearofJoining STRING(10)
+MonthofJoining    STRING(10)
+MonthNameofJoining    STRING(20)
+ShortMonth    STRING(10)
+DayofJoining  STRING(10)
+DOWofJoining  STRING(20)
+ShortDOW      STRING(10)
+AgeinCompanyYears STRING(20)
+Salary        STRING(20)
+LastHike      STRING(10)
+SSN           STRING(20)
+PhoneNo       STRING(20)
+PlaceName     STRING(20)
+County        STRING(20)
+City          STRING(20)
+State         STRING(10)
+Zip           STRING(20)
+Region        STRING(20)
+UserName      STRING(20)
+Password      STRING(30)
+            END
+fs  FlatSerializer
+clk LONG
+  CODE  
+  
+  !Arrange
+  fs.Init
+  fs.AddFieldAliasByReference(Employees.EmpID,                    'Emp ID')
+  fs.AddFieldAliasByReference(Employees.NamePrefix,               'Name Prefix')
+  fs.AddFieldAliasByReference(Employees.FirstName,                'First Name')
+  fs.AddFieldAliasByReference(Employees.MiddleInitial,            'Middle Initial')
+  fs.AddFieldAliasByReference(Employees.LastName,                 'Last Name')
+  fs.AddFieldAliasByReference(Employees.Gender,                   'Gender')
+  fs.AddFieldAliasByReference(Employees.EMail,                    'E Mail')
+  fs.AddFieldAliasByReference(Employees.FathersName,              'Father''s Name')
+  fs.AddFieldAliasByReference(Employees.MothersName,              'Mother''s Name')
+  fs.AddFieldAliasByReference(Employees.MothersMaidenName,        'Mother''s Maiden Name')
+  fs.AddFieldAliasByReference(Employees.DateofBirth,              'Date of Birth')
+  fs.AddFieldAliasByReference(Employees.TimeofBirth,              'Time of Birth')
+  fs.AddFieldAliasByReference(Employees.AgeinYrs,                 'Age in Yrs.')
+  fs.AddFieldAliasByReference(Employees.WeightinKgs,              'Weight in Kgs.')
+  fs.AddFieldAliasByReference(Employees.DateofJoining,            'Date of Joining')
+  fs.AddFieldAliasByReference(Employees.QuarterofJoining,         'Quarter of Joining')
+  fs.AddFieldAliasByReference(Employees.HalfofJoining,            'Half of Joining')
+  fs.AddFieldAliasByReference(Employees.YearofJoining,            'Year of Joining')
+  fs.AddFieldAliasByReference(Employees.MonthofJoining,           'Month of Joining')
+  fs.AddFieldAliasByReference(Employees.MonthNameofJoining,       'Month Name of Joining')
+  fs.AddFieldAliasByReference(Employees.ShortMonth,               'Short Month')
+  fs.AddFieldAliasByReference(Employees.DayofJoining,             'Day of Joining')
+  fs.AddFieldAliasByReference(Employees.DOWofJoining,             'DOW of Joining')
+  fs.AddFieldAliasByReference(Employees.ShortDOW,                 'Short DOW')
+  fs.AddFieldAliasByReference(Employees.AgeinCompanyYears,        'Age in Company (Years)')
+  fs.AddFieldAliasByReference(Employees.Salary,                   'Salary')
+  fs.AddFieldAliasByReference(Employees.LastHike,                 'Last % Hike')
+  fs.AddFieldAliasByReference(Employees.SSN,                      'SSN')
+  fs.AddFieldAliasByReference(Employees.PhoneNo,                  'Phone No.')
+  fs.AddFieldAliasByReference(Employees.PlaceName,                'Place Name')
+  fs.AddFieldAliasByReference(Employees.County,                   'County')
+  fs.AddFieldAliasByReference(Employees.City,                     'City')
+  fs.AddFieldAliasByReference(Employees.State,                    'State')
+  fs.AddFieldAliasByReference(Employees.Zip,                      'Zip')
+  fs.AddFieldAliasByReference(Employees.Region,                   'Region')
+  fs.AddFieldAliasByReference(Employees.UserName,                 'User Name')
+  fs.AddFieldAliasByReference(Employees.Password,                 'Password')
+
+  !Act
+  clk -= CLOCK()
+  fs.LoadTextFile('100000 Records.csv')  
+  fs.DeserializeToQueue(Employees)  
+  clk += CLOCK()  
+  
+  !Assert      
+  AssertEqual(100000,RECORDS(Employees),'Test 100k, time: '&clk/100) 
+  GET(Employees,1)
+  AssertEqual(882966,Employees.EmpID,'Test 100k, records')
+  GET(Employees,100000)
+  AssertEqual('Nelson Roan',Employees.FathersName,'Test 100k, field with alias')
+  AssertEqual('F+Fir3g9Js}wkt',Employees.Password,'Test 100k, last field in file')
+
+  !Baseline: 43.61 
+  !After &STRING and string slicing in TextFileToString: 37.31
+  !After readonly and buffers in TextFileToString: 36.81
+  !After precomputed lens in LoadString: 26.66  
+  !After optimizing deformatcolumnvalue: 24.02
+  !After replacing ANY with fsDynString: No noticeable change, will probably help serializing
+  !After resolving aliases once: 18.25
+[END]
+[END]
+[END]
+[MODULE]
+NAME 'FlatSerializer.clw'
+[COMMON]
+FROM ABC GENERATEDClass
+MODIFIED '2021/08/02' '21:37:40'
+[PROCEDURE]
+NAME FlatSerializer
+[COMMON]
+FROM ABC SourceClass
+MODIFIED '2021/10/17' '10:45:44'
+[PROMPTS]
+%GenerateMemberAsGeneric LONG  (1)
+%GenerateOpenClose LONG  (0)
+%GenerateSaveRestore LONG  (0)
+[EMBED]
+EMBED %ClassImplementationSection
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 5000
+PROPERTY:END
+!Carlos Gutierrez   carlosg@sca.mx    https://github.com/CarlosGtrz
+!
+!MIT License
+!
+!Copyright (c) 2021 Carlos Gutierrez Fragosa
+!
+!Permission is hereby granted, free of charge, to any person obtaining a copy
+!of this software and associated documentation files (the "Software"), to deal
+!in the Software without restriction, including without limitation the rights
+!to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+!copies of the Software, and to permit persons to whom the Software is
+!furnished to do so, subject to the following conditions:
+!
+!The above copyright notice and this permission notice shall be included in all
+!copies or substantial portions of the Software.
+!
+!THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+!IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+!FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+!AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+!LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+!OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+!SOFTWARE.
+
+!Local Class, inspired by StringClass in xmlclass.inc/TreeViewWrap.clw
+fsDynString         CLASS,TYPE
+s                     &STRING,PRIVATE
+len                   LONG,PRIVATE
+set                   PROCEDURE(STRING str)
+get                   PROCEDURE(),STRING
+get                   PROCEDURE(LONG pstart,LONG pend),STRING
+len                   PROCEDURE(),LONG
+append                PROCEDURE(STRING str)
+append                PROCEDURE(STRING str,STRING sep)
+replace               PROCEDURE(STRING pOldString,STRING pNewString)
+Destruct              PROCEDURE
+                    END
+
+FlatSerializer.Init PROCEDURE(<STRING pColumnSep>,<STRING pLineBreakString>,<STRING pQuoteSymbol>)
+  CODE
+  
+  SELF.ColumnSep = ','
+  SELF.LineBreakString = '<13,10>' 
+  SELF.QuoteSymbol = '"'
+  IF NOT OMITTED(pColumnSep)
+    SELF.ColumnSep = CLIP(pColumnSep)
+  .
+  IF NOT OMITTED(pLineBreakString)
+    SELF.LineBreakString = CLIP(pLineBreakString)
+  .
+  IF NOT OMITTED(pQuoteSymbol)
+    SELF.QuoteSymbol = CLIP(pQuoteSymbol)
+  .
+  SELF.DatesPicture = '@D10-B'
+  SELF.TimesPicture = '@T04B'
+  SELF.IncludeHeaders = TRUE
+  SELF.AlwaysQuoteStrings = TRUE
+  SELF.RemovePrefixes = TRUE
+  SELF.ReadLinesWithoutColumnSeparators = FALSE
+  SELF.GroupTufoType = 0
+  SELF.GroupTufoAddress = 0
+  SELF.GroupTufoSize = 0
+  SELF.Free(SELF.Fields)
+  SELF.Free(SELF.ExcludedFields)
+  SELF.Free(SELF.FieldsAlias)
+  FREE(SELF.ColumnNames)
+  SELF.FreeLineValues()
+  
+FlatSerializer.InitTSV  PROCEDURE
+  CODE
+  SELF.Init('<9>')
+  SELF.SetAlwaysQuoteStrings(FALSE)
+  
+FlatSerializer.SetColumnSeparator   PROCEDURE(STRING pSep)
+  CODE
+  
+  SELF.ColumnSep = pSep
+  
+FlatSerializer.SetLineBreakString   PROCEDURE(STRING pStr)
+  CODE
+  
+  SELF.LineBreakString = pStr
+
+FlatSerializer.SetQuoteSymbol   PROCEDURE(STRING pSym)
+  CODE
+  
+  SELF.QuoteSymbol = pSym
+
+FlatSerializer.SetDatesPicture  PROCEDURE(STRING pPic)
+  CODE
+  
+  SELF.DatesPicture = pPic
+
+FlatSerializer.SetTimesPicture  PROCEDURE(STRING pPic)
+  CODE
+  
+  SELF.TimesPicture = pPic
+
+FlatSerializer.SetIncludeHeaders    PROCEDURE(BOOL pVal)
+  CODE
+  
+  SELF.IncludeHeaders = pVal  
+
+FlatSerializer.SetAlwaysQuoteStrings    PROCEDURE(BOOL pVal)
+  CODE
+  
+  SELF.AlwaysQuoteStrings = pVal  
+
+FlatSerializer.SetRemovePrefixes   PROCEDURE(BOOL pVal)
+  CODE
+  
+  SELF.RemovePrefixes = pVal  
+
+FlatSerializer.SetReadLinesWithoutColumnSeparators  PROCEDURE(BOOL pVal)
+  CODE
+  
+  SELF.ReadLinesWithoutColumnSeparators = pVal  
+
+FlatSerializer.AddExcludedFieldByName   PROCEDURE(STRING pField)
+  CODE
+  
+  CLEAR(SELF.ExcludedFields)
+  SELF.ExcludedFields.Name = pField
+  SELF.ExcludedFields.UpperName = UPPER(pField)
+  ADD(SELF.ExcludedFields)
+
+FlatSerializer.AddExcludedFieldByReference  PROCEDURE(*? pField)
+  CODE
+  
+  CLEAR(SELF.ExcludedFields)
+  SELF.ExcludedFields.Ref &= pField
+  SELF.GetTufoInfo(pField,SELF.ExcludedFields.TufoType,SELF.ExcludedFields.TufoAddress,SELF.ExcludedFields.TufoSize)
+  ADD(SELF.ExcludedFields)
+
+FlatSerializer.SerializeGroupNames  PROCEDURE(*GROUP pGroup)!,STRING
+names                                 fsDynString
+idx                                   LONG
+  CODE
+  
+  SELF.ParseGroup(pGroup)
+  LOOP idx = 1 TO RECORDS(SELF.Fields)
+    GET(SELF.Fields,idx)
+    names.append(CLIP(SELF.Fields.Name),SELF.ColumnSep)
+  .
+  RETURN names.get()
+  
+FlatSerializer.SerializeGroupValues PROCEDURE(*GROUP pGroup)!,STRING
+values                                fsDynString
+idx                                   LONG
+  CODE
+
+  SELF.ParseGroup(pGroup)
+  LOOP idx = 1 TO RECORDS(SELF.Fields)
+    GET(SELF.Fields,idx)
+    values.append(SELF.FormatFieldValue(),SELF.ColumnSep)
+  .
+  RETURN values.get()
+  
+FlatSerializer.SerializeGroup   PROCEDURE(*GROUP pGroup)!,STRING
+idx                               LONG
+serialized                        fsDynString
+  CODE
+  IF SELF.IncludeHeaders
+    serialized.set( |
+        SELF.SerializeGroupNames(pGroup) & | 
+        SELF.LineBreakString |
+        )
+  .  
+  serialized.append( |
+      SELF.SerializeGroupValues(pGroup) & | 
+      SELF.LineBreakString |    
+      )  
+  RETURN serialized.get()
+  
+FlatSerializer.SerializeQueue   PROCEDURE(*QUEUE pQueue)!,STRING
+idx                               LONG
+serialized                        fsDynString
+  CODE
+  
+  IF SELF.IncludeHeaders
+    serialized.set( |
+        SELF.SerializeGroupNames(pQueue) & | 
+        SELF.LineBreakString |    
+        )
+    
+  .  
+  LOOP idx = 1 TO RECORDS(pQueue)
+    GET(pQueue,idx)
+    serialized.append( |        
+        SELF.SerializeGroupValues(pQueue) & | 
+        SELF.LineBreakString |    
+        )    
+  .
+  RETURN serialized.get()
+
+FlatSerializer.SerializeFile    PROCEDURE(*FILE pFile,<*KEY pFileKey>)!,STRING
+serialized                        fsDynString
+filerec                           &GROUP
+filekey                           &KEY
+  CODE
+  
+  filerec &= pFile{PROP:Record}
+  IF filerec &= NULL THEN RETURN ''.
+  filekey &= NULL
+  IF NOT OMITTED(pFileKey)    
+    filekey &= pfileKey
+  .
+  IF filekey &= NULL AND pFile{PROP:Keys} > 0
+    filekey &= pFile{PROP:Key,1}
+  .  
+  IF NOT filekey &= NULL
+    SET(filekey)
+  ELSE
+    SET(pFile)
+  .
+  IF SELF.IncludeHeaders
+    serialized.set( |
+        SELF.SerializeGroupNames(filerec) & | 
+        SELF.LineBreakString |    
+        )    
+  .  
+  LOOP
+    NEXT(pFile)
+    IF ERRORCODE() THEN BREAK.
+    serialized.append( |
+        SELF.SerializeGroupValues(filerec) & | 
+        SELF.LineBreakString |
+        )    
+  .
+  RETURN serialized.get()
+  
+FlatSerializer.SerializeGroupToTextFile PROCEDURE(*GROUP pGroup,STRING pFileName)
+  CODE
+  
+  SELF.StringToTextFile(SELF.SerializeGroup(pGroup),pFileName)
+  
+FlatSerializer.SerializeQueueToTextFile    PROCEDURE(*QUEUE pQueue,STRING pFileName)
+  CODE
+  
+  SELF.StringToTextFile(SELF.SerializeQueue(pQueue),pFileName)
+  
+FlatSerializer.SerializeFileToTextFile  PROCEDURE(*FILE pFile,STRING pFileName,<*KEY pFileKey>)
+  CODE
+  
+  SELF.StringToTextFile(SELF.SerializeFile(pFile,pFileKey),pFileName)
+  
+FlatSerializer.AddFieldAliasByReference PROCEDURE(*? pField,STRING pAlias)
+  CODE 
+  
+  CLEAR(SELF.FieldsAlias)
+  SELF.FieldsAlias.Ref &= pField
+  SELF.GetTufoInfo(pField,SELF.FieldsAlias.TufoType,SELF.FieldsAlias.TufoAddress,SELF.FieldsAlias.TufoSize)
+  SELF.FieldsAlias.Name = pAlias
+  SELF.FieldsAlias.UpperName = UPPER(pAlias)
+  ADD(SELF.FieldsAlias)
+  
+FlatSerializer.LoadString   PROCEDURE(STRING pText)
+pos                           LONG
+inHeaders                     LONG
+inQuote                       LONG
+valueStart                    LONG
+valueEnd                      LONG
+unescapedVal                  fsDynString
+lineHasValues                 LONG
+lineEnd                       LONG
+pTextLen                      LONG
+QuoteSymbolLen                LONG
+ColumnSepLen                  LONG
+LineBreakLen                  LONG
+
+  CODE    
+  
+  FREE(SELF.ColumnNames)
+  SELF.FreeLineValues
+  CLEAR(SELF.LineValues)
+  inHeaders = 1
+  inQuote = 0
+  valueStart = 1
+  valueEnd = 0
+  lineEnd = 0
+  lineHasValues = 0
+  pTextLen = SIZE(pText)
+  QuoteSymbolLen = LEN(SELF.QuoteSymbol)
+  ColumnSepLen = LEN(SELF.ColumnSep)
+  LineBreakLen = LEN(SELF.LineBreakString)
+  pos = 0
+  LOOP
+    pos += 1
+    IF pos > pTextLen THEN BREAK.    
+    
+    !Detect quote
+    IF pos >= QuoteSymbolLen  AND pText[ pos - QuoteSymbolLen + 1 : pos ] = SELF.QuoteSymbol
+      inQuote = 1 - inQuote!CHOOSE(NOT inQuote)
+    .
+    
+    IF NOT inQuote
+      !Detect end of column 
+      IF pos >= ColumnSepLen AND pText[ pos - ColumnSepLen + 1 : pos ] = SELF.ColumnSep
+        valueEnd = pos - ColumnSepLen
+        lineHasValues = 1
+      .
+      !Detect end of line
+      IF pos >= LineBreakLen AND pText[ pos - LineBreakLen + 1 : pos ] = SELF.LineBreakString 
+        IF NOT lineHasValues AND NOT SELF.ReadLinesWithoutColumnSeparators
+          !Skip empty line
+          valueStart = pos+1
+          CYCLE
+        .        
+        valueEnd = pos - LineBreakLen
+        lineEnd = pos 
+      .      
+      !Detect end of text
+      IF pos = pTextLen   
+        IF NOT valueEnd
+          valueEnd = pos
+        .        
+        lineEnd = pos 
+      .
+      IF valueEnd
+        !Remove Excel formula string constant start
+        IF valueEnd - valueStart + 1 >= QuoteSymbolLen+1
+          IF pText[ valueStart : valueStart + QuoteSymbolLen+1 - 1 ] = '='&SELF.QuoteSymbol
+            valueStart += QuoteSymbolLen+1
+          .
+        .
+        !Remove starting quotes
+        IF valueEnd - valueStart + 1 >= QuoteSymbolLen
+          IF pText[ valueStart : valueStart + QuoteSymbolLen - 1 ] = SELF.QuoteSymbol
+            valueStart += QuoteSymbolLen
+          .
+        .
+        !Remove ending quotes
+        IF valueEnd - valueStart + 1 >= QuoteSymbolLen
+          IF pText[ valueEnd - QuoteSymbolLen + 1 : valueEnd ] = SELF.QuoteSymbol
+            valueEnd -= QuoteSymbolLen
+          .
+        .
+        unescapedVal.set(SELF.UnEscapeQuotes(pText[valueStart : valueEnd]))
+        IF inHeaders
+          CLEAR(SELF.ColumnNames)
+          SELF.ColumnNames.Name = unescapedVal.get()
+          SELF.ColumnNames.UpperName = UPPER(SELF.ColumnNames.Name)
+          ADD(SELF.ColumnNames)
+        ELSE
+          IF SELF.LineValues.ColumnValues &= NULL
+            SELF.LineValues.ColumnValues &= NEW fsColumnValues
+          .
+          SELF.LineValues.ColumnValues.Value &= NEW STRING (unescapedVal.len())
+          SELF.LineValues.ColumnValues.Value = unescapedVal.get()
+          ADD(SELF.LineValues.ColumnValues)
+        .        
+        valueStart = pos + 1
+        valueEnd = 0        
+      .
+      IF lineEnd 
+        IF inHeaders
+          inHeaders = 0
+        ELSE
+          ADD(SELF.LineValues)
+          CLEAR(SELF.LineValues)
+        .
+        lineEnd = 0
+        lineHasValues = 0
+      .      
+    .
+  .  
+  
+FlatSerializer.LoadTextFile PROCEDURE(STRING pFileName)
+str &STRING
+  CODE
+  
+  str &= SELF.StringFromTextFile(pFileName)
+  IF NOT str &= NULL
+    SELF.LoadString(str)
+  .
+  DISPOSE(str)
+   
+FlatSerializer.GetLinesCount    PROCEDURE()!,LONG
+  CODE
+  
+  RETURN RECORDS(SELF.LineValues)
+  
+FlatSerializer.GetValueByName   PROCEDURE(STRING pColumnName,LONG pLine = 1)!,STRING  
+  CODE
+
+  CLEAR(SELF.ColumnNames)
+  SELF.ColumnNames.UpperName = UPPER(pColumnName)
+  GET(SELF.ColumnNames,SELF.ColumnNames.UpperName)
+  IF ERRORCODE() THEN RETURN ''.
+
+  CLEAR(SELF.LineValues)
+  GET(SELF.LineValues,pLine)
+  IF ERRORCODE() THEN RETURN ''.
+  
+  CLEAR(SELF.LineValues.ColumnValues)
+  GET(SELF.LineValues.ColumnValues,POINTER(SELF.ColumnNames))
+  IF ERRORCODE() THEN RETURN ''.
+  
+  RETURN SELF.DeformatColumnValue() 
+  
+FlatSerializer.DeSerializeToGroup   PROCEDURE(*GROUP pGroup,LONG pLine = 1)
+idx                                   LONG
+  CODE
+  
+  SELF.ParseGroup(pGroup)
+  CLEAR(SELF.LineValues)
+  GET(SELF.LineValues,pLine)
+  IF ERRORCODE() THEN RETURN.
+  LOOP idx = 1 TO RECORDS(SELF.ColumnNames)
+    GET(SELF.ColumnNames,idx)
+    CLEAR(SELF.LineValues.ColumnValues)
+    GET(SELF.LineValues.ColumnValues,idx)
+    CLEAR(SELF.Fields)
+    SELF.Fields.UpperName = SELF.ColumnNames.FieldUpperName
+    GET(SELF.Fields,SELF.Fields.UpperName)
+    IF ERRORCODE() THEN CYCLE.
+    SELF.Fields.Ref = SELF.DeformatColumnValue()
+  .
+  
+FlatSerializer.DeSerializeToQueue   PROCEDURE(*QUEUE pQueue)
+idx                                   LONG
+  CODE
+  
+  LOOP idx = 1 TO SELF.GetLinesCount()
+    CLEAR(pQueue)
+    SELF.DeSerializeToGroup(pQueue,idx)
+    ADD(pQueue)
+  .
+
+FlatSerializer.DeSerializeToFile    PROCEDURE(*FILE pFile)
+idx                                   LONG
+fgr                                   &GROUP
+  CODE
+  
+  fgr &= pFile{PROP:Record}
+  IF fgr &= NULL THEN RETURN.
+  LOOP idx = 1 TO SELF.GetLinesCount()
+    CLEAR(fgr)
+    SELF.DeSerializeToGroup(fgr,idx)
+    ADD(pFile)
+  .
+  
+FlatSerializer.ParseGroup   PROCEDURE(*GROUP pGroup,LONG pLevel = 1)!,PRIVATE
+idx                           LONG
+nam                           LIKE(SELF.Fields.Name)
+ref                           ANY
+pos                           LONG
+grref                         &GROUP
+gTufoType                     LONG
+gTufoAddress                  LONG
+gTufoSize                     LONG
+  CODE
+  
+  IF pLevel = 1    
+    SELF.GetTufoInfo(pGroup,gTufoType,gTufoAddress,gTufoType)
+    IF SELF.GroupTufoType = gTufoType AND SELF.GroupTufoAddress = gTufoAddress AND SELF.GroupTufoSize = gTufoSize THEN RETURN. !Don't parse again same group
+    SELF.GroupTufoType = gTufoType
+    SELF.GroupTufoAddress = gTufoAddress
+    SELF.GroupTufoSize = gTufoSize
+    SELF.Free(SELF.Fields)
+  .
+  idx = 0
+  LOOP
+    idx += 1
+    CLEAR(SELF.Fields)
+    SELF.Fields.Ref &= WHAT(pGroup,idx)
+    IF SELF.Fields.Ref &= NULL THEN BREAK.
+    SELF.GetTufoInfo(SELF.Fields.Ref,SELF.Fields.TufoType,SELF.Fields.TufoAddress,SELF.Fields.TufoSize)
+    nam = WHO(pGroup,idx)
+    !Remove extended name attributes
+    pos = INSTRING('|',nam,1,1)
+    IF pos
+      nam = SUB(nam,1,pos-1)
+    .    
+    IF SELF.RemovePrefixes
+      pos = INSTRING(':',nam,1,1)      
+      IF pos
+        nam = SUB(nam,pos+1,LEN(nam)-pos)        
+      .    
+    .    
+    IF NOT nam 
+      nam = 'Field'&idx
+    .    
+    SELF.Fields.Name = nam
+    SELF.Fields.UpperName = UPPER(SELF.Fields.Name)    
+    IF SELF.IsExcluded()
+      SELF.Fields.Ref &= NULL
+      CYCLE
+    .
+    SELF.Fields.Level = pLevel
+    SELF.Fields.IsGroup = ISGROUP(pGroup,idx)
+    ADD(SELF.Fields)
+    IF ISGROUP(pGroup,idx)
+      grref &= GETGROUP(pGroup,idx)
+      idx += SELF.FieldsInGroup(grref)
+      SELF.ParseGroup(grref,pLevel+1)
+    .
+  .
+  
+  IF pLevel = 1  
+    DO ResolveAliases
+  .
+  
+ResolveAliases      ROUTINE
+
+  IF NOT RECORDS(SELF.ColumnNames) THEN EXIT.
+  
+  !Default link  
+  LOOP idx = 1 TO RECORDS(SELF.ColumnNames)
+    GET(SELF.ColumnNames,idx)
+    SELF.ColumnNames.FieldUpperName = SELF.ColumnNames.UpperName
+    PUT(SELF.ColumnNames)
+  .  
+  IF NOT RECORDS(SELF.FieldsAlias) THEN EXIT.  
+  
+  !Link field name to column name
+  LOOP idx = 1 TO RECORDS(SELF.ColumnNames)
+    GET(SELF.ColumnNames,idx)
+    !Look for alias
+    CLEAR(SELF.FieldsAlias)
+    SELF.FieldsAlias.UpperName = SELF.ColumnNames.UpperName
+    GET(SELF.FieldsAlias,SELF.FieldsAlias.UpperName)
+    IF ERRORCODE() THEN CYCLE.
+    !Alias found, get field
+    CLEAR(SELF.Fields)
+    SELF.Fields.TufoType = SELF.FieldsAlias.TufoType
+    SELF.Fields.TufoAddress = SELF.FieldsAlias.TufoAddress
+    SELF.Fields.TufoSize = SELF.FieldsAlias.TufoSize
+    GET(SELF.Fields,SELF.Fields.TufoType,SELF.Fields.TufoAddress,SELF.Fields.TufoSize)
+    IF ERRORCODE() THEN CYCLE.
+    SELF.ColumnNames.FieldUpperName = SELF.Fields.UpperName
+    PUT(SELF.ColumnNames)
+  .      
+  
+FlatSerializer.IsExcluded   PROCEDURE()!,BOOL,PRIVATE
+idx                           LONG
+  CODE
+  
+  CLEAR(SELF.ExcludedFields)
+  SELF.ExcludedFields.UpperName = SELF.Fields.UpperName
+  GET(SELF.ExcludedFields,SELF.ExcludedFields.UpperName)
+  IF NOT ERRORCODE() THEN RETURN TRUE.
+
+  CLEAR(SELF.ExcludedFields)
+  SELF.ExcludedFields.TufoType = SELF.Fields.TufoType
+  SELF.ExcludedFields.TufoAddress = SELF.Fields.TufoAddress
+  SELF.ExcludedFields.TufoSize = SELF.Fields.TufoSize
+  GET(SELF.ExcludedFields,SELF.ExcludedFields.TufoType,SELF.ExcludedFields.TufoAddress,SELF.ExcludedFields.TufoSize)
+  IF NOT ERRORCODE() THEN RETURN TRUE.
+
+  RETURN FALSE
+  
+FlatSerializer.FieldsInGroup    PROCEDURE(*GROUP pGroup)!,LONG,PRIVATE
+idx                               LONG
+fld                               ANY
+grpref                            &GROUP
+count                             LONG
+  CODE
+  
+  LOOP
+    idx += 1
+    fld &= WHAT(pGroup,idx)
+    IF fld &= NULL THEN BREAK.
+    IF ISGROUP(pGroup,idx)
+      grpref &= GETGROUP(pGroup,idx)
+      count += SELF.FieldsInGroup(grpref)
+    ELSE
+      count += 1
+    .
+  .
+  RETURN count
+  
+FlatSerializer.FormatFieldValue  PROCEDURE()!,STRING,PRIVATE
+  CODE
+  
+  IF LEFT(SELF.Fields.Ref,2) = '="' AND RIGHT(SELF.Fields.Ref,1) = '"' !Excel won't quote separators inside formula string constant
+    RETURN '="'&SELF.BlankSeparators(SUB(SELF.Fields.Ref,3,LEN(SELF.Fields.Ref)-3))&'"' !Replace separators with ' '
+  .  
+  CASE SELF.Fields.TufoType
+    OF DataType:BYTE 
+    OROF DataType:SHORT 
+    OROF DataType:USHORT 
+    OROF DataType:LONG       
+    OROF DataType:ULONG 
+    OROF DataType:DECIMAL 
+    OROF DataType:PDECIMAL 
+    OROF DataType:REAL 
+    OROF DataType:SREAL
+      !Numbers
+      RETURN SELF.Fields.Ref
+    OF DataType:DATE
+      RETURN FORMAT(SELF.Fields.Ref,SELF.DatesPicture)
+    OF DataType:TIME
+      RETURN FORMAT(SELF.Fields.Ref,SELF.TimesPicture)
+    ELSE
+      !Strings
+      IF SELF.AlwaysQuoteStrings OR |
+          INSTRING(SELF.ColumnSep,SELF.Fields.Ref,1,1) OR |
+          INSTRING(SELF.LineBreakString,SELF.Fields.Ref,1,1) OR |
+          INSTRING(SELF.QuoteSymbol,SELF.Fields.Ref,1,1) 
+        RETURN SELF.QuoteSymbol & SELF.EscapeQuotes(CLIP(SELF.Fields.Ref)) & SELF.QuoteSymbol
+      ELSE
+        RETURN CLIP(SELF.Fields.Ref)
+      .      
+  .
+  RETURN ''
+
+FlatSerializer.DeformatColumnValue  PROCEDURE()!,STRING,PRIVATE
+  CODE  
+
+  CASE SELF.Fields.TufoType
+    OF DataType:DATE
+      RETURN DEFORMAT(SELF.LineValues.ColumnValues.Value,SELF.DatesPicture)
+    OF DataType:TIME
+      RETURN DEFORMAT(SELF.LineValues.ColumnValues.Value,SELF.TimesPicture)
+    ELSE
+      RETURN SELF.LineValues.ColumnValues.Value
+  .
+  RETURN ''
+  
+FlatSerializer.EscapeQuotes PROCEDURE(STRING pText)!,STRING,PRIVATE
+value fsDynString
+  CODE    
+  
+  value.set(pText)
+  value.replace(SELF.QuoteSymbol,SELF.QuoteSymbol&SELF.QuoteSymbol)
+  RETURN value.get()
+  
+FlatSerializer.UnEscapeQuotes   PROCEDURE(STRING pText)!,STRING,PRIVATE
+value                             fsDynString
+  CODE  
+  
+  value.set(pText)  
+  value.replace(SELF.QuoteSymbol&SELF.QuoteSymbol,SELF.QuoteSymbol)
+  RETURN value.get()
+  
+FlatSerializer.BlankSeparators  PROCEDURE(STRING pText)!,STRING,PRIVATE  
+value                             fsDynString
+  CODE
+  
+  value.set(pText)
+  value.replace(SELF.ColumnSep,' ')
+  value.replace(SELF.LineBreakString,' ')
+  value.replace(SELF.QuoteSymbol,' ')
+  RETURN CLIP(value.get())
+
+FlatSerializer.GetTufoInfo  PROCEDURE(*? pAny,*LONG pType,*LONG pAddress,*LONG pSize)
+!REGION TUFO
+!From https://github.com/MarkGoldberg/ClarionCommunity/blob/master/CW/Shared/Src/TUFO.INT
+                              OMIT('***',_C70_)
+!--- see softvelocity.public.clarion6 "Variable Data Type" Sept,12,2006 (code posted by dedpahom) -----!
+tmTUFO                        INTERFACE,TYPE
+AssignLong                      PROCEDURE                           !+00h 
+AssignReal                      PROCEDURE                           !+04h 
+AssignUFO                       PROCEDURE                           !+08h 
+DistinctsUFO                    PROCEDURE                           !+0Ch
+DistinctsLong                   PROCEDURE                           !+10h
+_Type                           PROCEDURE(LONG _UfoAddr),LONG       !+14h 
+ToMem                           PROCEDURE                           !+18h
+FromMem                         PROCEDURE                           !+1Ch
+OldFromMem                      PROCEDURE                           !+20h
+Pop                             PROCEDURE(LONG _UfoAddr)            !+24h
+Push                            PROCEDURE(LONG _UfoAddr)            !+28h
+DPop                            PROCEDURE(LONG _UfoAddr)            !+2Ch 
+DPush                           PROCEDURE(LONG _UfoAddr)            !+30h 
+_Real                           PROCEDURE(LONG _UfoAddr),REAL       !+34h 
+_Long                           PROCEDURE(LONG _UfoAddr),LONG       !+38h
+_Free                           PROCEDURE(LONG _UfoAddr)            !+3Ch
+_Clear                          PROCEDURE                           !+40h
+_Address                        PROCEDURE(LONG _UfoAddr),LONG       !+44h
+AClone                          PROCEDURE(LONG _UfoAddr),LONG       !+48h
+Select                          PROCEDURE                           !+4Ch 
+Slice                           PROCEDURE                           !+50h 
+Designate                       PROCEDURE                           !+54h
+_Max                            PROCEDURE(LONG _UfoAddr),LONG       !+58h
+_Size                           PROCEDURE(LONG _UfoAddr),LONG       !+5Ch
+BaseType                        PROCEDURE(LONG _UfoAddr),LONG       !+60h
+DistinctUpper                   PROCEDURE                           !+64h
+Cleared                         PROCEDURE(LONG _UfoAddr)            !+68h
+IsNull                          PROCEDURE(LONG _UfoAddr),LONG       !+6Ch
+OEM2ANSI                        PROCEDURE(LONG _UfoAddr)            !+70h
+ANSI2OEM                        PROCEDURE(LONG _UfoAddr)            !+74h
+_Bind                           PROCEDURE(LONG _UfoAddr)            !+78h
+_Add                            PROCEDURE                           !+7Ch
+Divide                          PROCEDURE                           !+80h
+Hash                            PROCEDURE(LONG _UfoAddr),LONG       !+84h
+SetAddress                      PROCEDURE                           !+88h 
+Match                           PROCEDURE                           !+8Ch 
+Identical                       PROCEDURE                           !+90h
+Store                           PROCEDURE                           !+94h
+                              END
+                              !END-OMIT('***',_C70_)
+                              COMPILE('***',_C70_)
+!According to Randy Rogers (Skype PM, Dec 13, 2010)
+tmTUFO                        INTERFACE,TYPE
+_Type                           PROCEDURE(LONG _UfoAddr),LONG       !+00h
+ToMem                           PROCEDURE                           !+04h
+FromMem                         PROCEDURE                           !+08h
+OldFromMem                      PROCEDURE                           !+0Ch
+Pop                             PROCEDURE(LONG _UfoAddr)            !+10h get a value from string stack
+Push                            PROCEDURE(LONG _UfoAddr)            !+14h put a vaule to string stack
+DPop                            PROCEDURE(LONG _UfoAddr)            !+18h get a value from DECIMAL stack
+DPush                           PROCEDURE(LONG _UfoAddr)            !+1Ch put a vaule to DECIMAL stack
+_Real                           PROCEDURE(LONG _UfoAddr),REAL       !+20h get a value as REAL
+_Long                           PROCEDURE(LONG _UfoAddr),LONG       !+24h get a value as LONG
+_Free                           PROCEDURE(LONG _UfoAddr)            !+28h disposes memory and frees a reference (sets it to NULL)
+_Clear                          PROCEDURE                           !+2Ch clears a variable
+_Address                        PROCEDURE(LONG _UfoAddr),LONG       !+30h returns an address of a variable
+AssignLong                      PROCEDURE                           !+34h
+AssignReal                      PROCEDURE                           !+38h
+AssignUFO                       PROCEDURE                           !+3Ch
+AClone                          PROCEDURE(LONG _UfoAddr),LONG       !+40h
+Select                          PROCEDURE                           !+44h
+Slice                           PROCEDURE                           !+48h
+Designate                       PROCEDURE                           !+4Ch returns group field as UFO object
+_Max                            PROCEDURE(LONG _UfoAddr),LONG       !+50h number of elements in first dimension of an array
+_Size                           PROCEDURE(LONG _UfoAddr),LONG       !+54h size of an object
+BaseType                        PROCEDURE(LONG _UfoAddr),LONG       !+58h
+DistinctUpper                   PROCEDURE                           !+5Ch
+DistinctsUFO                    PROCEDURE                           !+60h
+DistinctsLong                   PROCEDURE                           !+64h
+Cleared                         PROCEDURE(LONG _UfoAddr)            !+68h was an object disposed?
+IsNull                          PROCEDURE(LONG _UfoAddr),LONG       !+6Ch
+OEM2ANSI                        PROCEDURE(LONG _UfoAddr)            !+70h
+ANSI2OEM                        PROCEDURE(LONG _UfoAddr)            !+74h
+_Bind                           PROCEDURE(LONG _UfoAddr)            !+78h bind all fields of a group
+_Add                            PROCEDURE                           !+7Ch
+Divide                          PROCEDURE                           !+80h
+Hash                            PROCEDURE(LONG _UfoAddr),LONG       !+84h Calc CRC
+SetAddress                      PROCEDURE                           !+88h sets the address of a variable
+Match                           PROCEDURE                           !+8Ch compares the type and the size of a field with a field of ClassDesc structure
+Identical                       PROCEDURE                           !+90h
+Store                           PROCEDURE                           !+94h writes the value of an object into the memory address
+                              END
+                              !END-COMPILE('***',_C70_)
+!ENDREGION
+tufo                          &tmTUFO
+addr                          LONG
+  CODE
+  
+  addr = ADDRESS(pAny)
+  IF NOT addr THEN RETURN.
+  tufo &= addr+0
+  pType = tufo._Type(addr)
+  pAddress = tufo._Address(addr)
+  pSize = tufo._Size(addr)
+  
+FlatSerializer.Free PROCEDURE(fsFieldsQueue pQueue)!,PRIVATE
+idx                   LONG
+  CODE
+  
+  IF pQueue &= NULL THEN RETURN. 
+  LOOP idx = RECORDS(pQueue) TO 1 BY -1
+    GET(pQueue,idx)
+    pQueue.Ref &= NULL
+    DELETE(pQueue)
+  .
+    
+FlatSerializer.FreeLineValues   PROCEDURE!,PRIVATE
+idx                               LONG
+idx2                              LONG
+  CODE
+  
+  IF SELF.LineValues &= NULL THEN RETURN.
+  LOOP idx = RECORDS(SELF.LineValues) TO 1 BY -1
+    GET(SELF.LineValues,idx)
+    IF NOT SELF.LineValues.ColumnValues &= NULL
+      LOOP idx2 = RECORDS(SELF.LineValues.ColumnValues) TO 1 BY -1
+        GET(SELF.LineValues.ColumnValues,idx2)
+        DISPOSE(SELF.LineValues.ColumnValues.Value)
+        DELETE(SELF.LineValues.ColumnValues)
+      .
+      DISPOSE(SELF.LineValues.ColumnValues)
+    .
+    DELETE(SELF.LineValues)
+  .
+  
+FlatSerializer.StringToTextFile PROCEDURE(STRING pStr,STRING pFileName)!,PRIVATE
+bufSize                               EQUATE(32768)
+dosFile                               FILE,DRIVER('DOS'),CREATE
+buf                                     RECORD;STRING(bufSize).
+                                      END
+pos                               LONG(1)
+strLen                            LONG
+  CODE  
+  dosFile{PROP:Name} = pFileName
+  CREATE(dosFile)
+  IF ERRORCODE() THEN RETURN.
+  OPEN(dosFile)
+  IF ERRORCODE() THEN RETURN.
+  strLen = LEN(pStr)
+  LOOP UNTIL pos > strLen
+    dosFile.Buf = pStr[ pos : strLen ]
+    ADD(dosFile, |
+        CHOOSE(pos + bufSize > strLen, |
+        strLen - pos + 1, |
+        bufSize))
+    pos += bufSize
+  .
+  CLOSE(dosfile)
+  
+FlatSerializer.StringFromTextFile   PROCEDURE(STRING pFileName)!,*STRING,PRIVATE
+bufSize                               EQUATE(32768)
+dosFile                               FILE,DRIVER('DOS'),CREATE
+                                        RECORD
+buf                                       STRING(bufSize)
+                                        END
+                                      END
+pos                                   LONG(1)
+poslen                                LONG
+fileSize                              LONG
+str                                   &STRING
+
+  CODE  
+  dosFile{PROP:Name} = pFileName   
+  OPEN(dosFile,40h) !ReadOnly+DenyNone
+  IF ERRORCODE() THEN RETURN NULL.  
+  fileSize = BYTES(dosFile)  
+  IF NOT fileSize THEN 
+    CLOSE(dosFile)
+    RETURN NULL
+  .
+  str &= NEW STRING(fileSize)  
+  SEND (dosFile, 'FILEBUFFERS=' & ROUND(fileSize/512, 1))
+  LOOP UNTIL pos > fileSize
+    GET(dosFile,pos)
+    IF pos + bufSize > fileSize
+      poslen = fileSize - pos + 1
+    ELSE
+      poslen = bufSize
+    .   
+    str [ pos : pos + poslen - 1 ] = dosFile.buf [ 1 : poslen ]
+    pos += bufSize    
+  .
+  CLOSE(dosfile)
+  RETURN str
+
+FlatSerializer.DebugView    PROCEDURE(STRING pStr)
+pre                           STRING('fs')
+lcstr                         CSTRING(SIZE(pre)+SIZE(pStr)+3)
+  CODE
+  lcstr = pre&'|'&pStr&'|'
+  fs_OutputDebugString(lcstr)  
+  
+FlatSerializer.Construct    PROCEDURE
+  CODE
+  
+  SELF.ExcludedFields &= NEW fsFieldsQueue
+  SELF.Fields &= NEW fsFieldsQueue
+  SELF.FieldsAlias &= NEW fsFieldsQueue
+  SELF.ColumnNames &= NEW fsColumnNames
+  SELF.LineValues &= NEW fsLineValues
+  SELF.Init
+  
+FlatSerializer.Destruct PROCEDURE
+  CODE
+  
+  SELF.Free(SELF.Fields)
+  DISPOSE(SELF.Fields)  
+  SELF.Free(SELF.ExcludedFields)
+  DISPOSE(SELF.ExcludedFields)
+  SELF.Free(SELF.FieldsAlias)
+  DISPOSE(SELF.FieldsAlias)
+  DISPOSE(SELF.ColumnNames)
+  SELF.FreeLineValues
+  DISPOSE(SELF.LineValues) 
+
+fsDynString.set     PROCEDURE(STRING str)
+  CODE
+  DISPOSE(SELF.s)
+  IF SIZE(str) > 0
+    SELF.len = SIZE(str)
+    SELF.s &= NEW STRING(SELF.len)
+    SELF.s = str
+  .
+  
+fsDynString.get           PROCEDURE()!,STRING
+  CODE
+  IF SELF.s &= NULL THEN RETURN ''.
+  RETURN SELF.s
+
+fsDynString.get     PROCEDURE(LONG pstart,LONG pend)!,STRING
+  CODE
+  IF SELF.s &= NULL THEN RETURN ''.
+  IF pstart > SELF.len() OR pend > SELF.len() OR pstart > pend OR pstart < 0 OR pend < 0 THEN RETURN ''.
+  RETURN SELF.s[ pstart : pend ]
+
+fsDynString.len     PROCEDURE()!,LONG
+  CODE
+  IF SELF.s &= NULL THEN RETURN 0.
+  RETURN SELF.len
+
+fsDynString.append  PROCEDURE(STRING str)
+  CODE
+  SELF.set(SELF.get() & str)
+
+fsDynString.append  PROCEDURE(STRING str,STRING sep)
+  CODE
+  IF SELF.s &= NULL
+    SELF.set(str)
+  ELSE    
+    SELF.set(SELF.get() & sep & str)
+  .
+  
+fsDynString.replace PROCEDURE(STRING pOldString,STRING pNewString)
+start                 LONG
+pos                   LONG
+oldStringLen          LONG
+newStringLen          LONG
+  CODE    
+  IF SELF.s &= NULL THEN RETURN.
+  oldStringLen = LEN(pOldString)
+  newStringLen = LEN(pNewString)
+  start = 1
+  LOOP
+    pos = INSTRING(pOldString,SELF.s,1,start)
+    IF NOT pos THEN BREAK.
+    SELF.set( | 
+        SELF.get(1,pos-1) & |
+        pNewString & |
+        SELF.get(pos+oldStringLen,SELF.len()) |
+        ) 
+    start = pos + newStringLen
+  .
+
+fsDynString.Destruct    PROCEDURE
+  CODE
+  DISPOSE(SELF.s) 
+[END]
+EMBED %ClassDeclarationSection
+[DEFINITION]
+[SOURCE]
+PROPERTY:BEGIN
+PRIORITY 5000
+PROPERTY:END
+!Carlos Gutierrez   carlosg@sca.mx    https://github.com/CarlosGtrz
+!
+!MIT License
+!
+!Copyright (c) 2021 Carlos Gutierrez Fragosa
+!
+!Permission is hereby granted, free of charge, to any person obtaining a copy
+!of this software and associated documentation files (the "Software"), to deal
+!in the Software without restriction, including without limitation the rights
+!to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+!copies of the Software, and to permit persons to whom the Software is
+!furnished to do so, subject to the following conditions:
+!
+!The above copyright notice and this permission notice shall be included in all
+!copies or substantial portions of the Software.
+!
+!THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+!IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+!FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+!AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+!LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+!OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+!SOFTWARE.
+
+fsFieldsQueue       QUEUE,TYPE
+Name                  STRING(60)
+UpperName             STRING(60)
+Ref                   ANY
+IsGroup               LONG
+Level                 LONG
+TufoType              LONG
+TufoAddress           LONG
+TufoSize              LONG
+                    END
+
+fsColumnNames       QUEUE,TYPE
+Name                  STRING(60)
+UpperName             STRING(60)
+FieldUpperName        STRING(60)
+                    END
+
+fsColumnValues      QUEUE,TYPE
+Value                 &STRING
+                    END
+
+fsLineValues        QUEUE,TYPE
+ColumnValues          &fsColumnValues
+                    END
+
+FlatSerializer      CLASS,MODULE('FlatSerializer'),LINK('FlatSerializer'),TYPE
+Init                  PROCEDURE(<STRING pColumnSep>,<STRING pLineBreakString>,<STRING pQuoteSymbol>)
+InitTSV               PROCEDURE
+SetColumnSeparator    PROCEDURE(STRING pSep)
+SetLineBreakString    PROCEDURE(STRING pStr)
+SetQuoteSymbol        PROCEDURE(STRING pSym)
+SetDatesPicture       PROCEDURE(STRING pPic)
+SetTimesPicture       PROCEDURE(STRING pPic)
+SetIncludeHeaders     PROCEDURE(BOOL pVal)
+SetAlwaysQuoteStrings PROCEDURE(BOOL pVal)
+SetRemovePrefixes     PROCEDURE(BOOL pVal)
+SetReadLinesWithoutColumnSeparators   PROCEDURE(BOOL pVal)
+
+!Serialize
+AddExcludedFieldByName    PROCEDURE(STRING pField)
+AddExcludedFieldByReference   PROCEDURE(*? pField)
+SerializeGroupNames   PROCEDURE(*GROUP pGroup),STRING
+SerializeGroupValues  PROCEDURE(*GROUP pGroup),STRING
+SerializeGroup        PROCEDURE(*GROUP pGroup),STRING
+SerializeQueue        PROCEDURE(*QUEUE pQueue),STRING
+SerializeFile         PROCEDURE(*FILE pFile,<*KEY pFileKey>),STRING
+SerializeGroupToTextFile  PROCEDURE(*GROUP pGroup,STRING pFileName)
+SerializeQueueToTextFile  PROCEDURE(*QUEUE pQueue,STRING pFileName)
+SerializeFileToTextFile   PROCEDURE(*FILE pFile,STRING pFileName,<*KEY pFileKey>)
+
+!Deserialize
+AddFieldAliasByReference  PROCEDURE(*? pField,STRING pAlias)
+LoadString            PROCEDURE(STRING pText)
+LoadTextFile          PROCEDURE(STRING pFileName)
+GetLinesCount         PROCEDURE(),LONG
+GetValueByName        PROCEDURE(STRING pColumnName,LONG pLine = 1),STRING
+DeSerializeToGroup    PROCEDURE(*GROUP pGroup,LONG pLine = 1)
+DeSerializeToQueue    PROCEDURE(*QUEUE pQueue)
+DeSerializeToFile     PROCEDURE(*FILE pFile)
+
+!Utility
+StringToTextFile      PROCEDURE(STRING pStr,STRING pFileName)!,PRIVATE
+StringFromTextFile    PROCEDURE(STRING pFileName),*STRING!,PRIVATE
+
+!Private
+ParseGroup            PROCEDURE(*GROUP pGroup,LONG pLevel = 1),PRIVATE
+IsExcluded            PROCEDURE(),BOOL,PRIVATE
+FieldsInGroup         PROCEDURE(*GROUP pGroup),LONG,PRIVATE
+FormatFieldValue      PROCEDURE(),STRING,PRIVATE
+DeformatColumnValue   PROCEDURE(),STRING,PRIVATE
+EscapeQuotes          PROCEDURE(STRING pText),STRING,PRIVATE
+UnEscapeQuotes        PROCEDURE(STRING pText),STRING,PRIVATE
+BlankSeparators       PROCEDURE(STRING pText),STRING,PRIVATE
+GetTufoInfo           PROCEDURE(*? pAny,*LONG pType,*LONG pAddress,*LONG pSize),PRIVATE
+Free                  PROCEDURE(fsFieldsQueue pQueue),PRIVATE
+FreeLineValues        PROCEDURE,PRIVATE
+DebugView             PROCEDURE(STRING pStr)
+Construct             PROCEDURE
+Destruct              PROCEDURE
+
+!Private Fields
+ColumnSep             CSTRING(5),PRIVATE
+LineBreakString       CSTRING(5),PRIVATE
+QuoteSymbol           CSTRING(5),PRIVATE
+DatesPicture          STRING(10),PRIVATE
+TimesPicture          STRING(10),PRIVATE
+IncludeHeaders        BOOL,PRIVATE
+AlwaysQuoteStrings    BOOL,PRIVATE
+RemovePrefixes        BOOL,PRIVATE
+ReadLinesWithoutColumnSeparators  BOOL,PRIVATE
+GroupTufoType         LONG,PRIVATE
+GroupTufoAddress      LONG,PRIVATE
+GroupTufoSize         LONG,PRIVATE
+ExcludedFields        &fsFieldsQueue,PRIVATE
+Fields                &fsFieldsQueue,PRIVATE
+FieldsAlias           &fsFieldsQueue,PRIVATE
+ColumnNames           &fsColumnNames,PRIVATE
+LineValues            &fsLineValues,PRIVATE
+                    END
+
+  MAP
+    MODULE('win32')
+      fs_OutputDebugString(*CSTRING cstr),PASCAL,RAW,NAME('OutputDebugStringA')      
+    END
+  END
+[END]
+[END]
+[END]

@@ -733,7 +733,7 @@ MODIFIED '2021/06/12' '11:00:56'
 NAME Tests
 [COMMON]
 FROM ABC Source
-MODIFIED '2021/10/17' '10:10:22'
+MODIFIED '2021/10/30' '15:50:40'
 [FILES]
 [OTHERS]
 Orders
@@ -786,9 +786,11 @@ PROPERTY:END
 
   DO TestFileFromToTextFile
   
-  DO WSTest   
+  DO WSTest     
   
   DO Test100k
+  
+  DO TestGroup1 
     
   DebugView('All tests done')
   
@@ -1790,6 +1792,38 @@ clk LONG
   !After optimizing deformatcolumnvalue: 24.02
   !After replacing ANY with fsDynString: No noticeable change, will probably help serializing
   !After resolving aliases once: 18.25
+  
+TestGroup1          ROUTINE  
+  DATA
+Group1  GROUP
+TestString    STRING(100)
+TestNumber    DECIMAL(15,6)
+TestDate      DATE
+TestTime      TIME
+            END
+fs  FlatSerializer
+  CODE  
+  
+  !Arrange
+  Group1.TestString = 'abcdef'
+  Group1.TestNumber = 123456.78  
+  Group1.TestDate = DATE(10,30,2021)
+  Group1.TestTime = 13*60*60*100 + 32*60*100 + 25*100 + 1    
+
+  !Act
+  fs.LoadString(fs.SerializeGroup(Group1))
+  !Assert  
+  AssertEqual(4,fs.GetColumnsCount(),'TestGroup1: columnscount')
+  AssertEqual('TESTSTRING',fs.GetColumnName(1),'TestGroup1: column name')
+  AssertEqual('TESTNUMBER',fs.GetColumnName(2),'TestGroup1: column name')
+  AssertEqual('TESTDATE',fs.GetColumnName(3),'TestGroup1: column name')
+  AssertEqual('TESTTIME',fs.GetColumnName(4),'TestGroup1: column name')
+  
+  AssertEqual(Group1.TestString,fs.GetValueByName(fs.GetColumnName(1)),'TestGroup1: column value')
+  AssertEqual(Group1.TestNumber,fs.GetValueByName(fs.GetColumnName(2)),'TestGroup1: column value')
+  AssertEqual(Group1.TestDate,fs.GetValueByName(fs.GetColumnName(3)),'TestGroup1: column value')
+  AssertEqual(Group1.TestTime,fs.GetValueByName(fs.GetColumnName(4)),'TestGroup1: column value')
+
 [END]
 [END]
 [END]
@@ -1802,7 +1836,7 @@ MODIFIED '2021/08/02' '21:37:40'
 NAME FlatSerializer
 [COMMON]
 FROM ABC SourceClass
-MODIFIED '2021/10/17' '10:45:44'
+MODIFIED '2021/10/30' '18:33:07'
 [PROMPTS]
 %GenerateMemberAsGeneric LONG  (1)
 %GenerateOpenClose LONG  (0)
@@ -1837,6 +1871,27 @@ PROPERTY:END
 !LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 !OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 !SOFTWARE.
+
+  MAP
+    MODULE('win32')
+      fs_OutputDebugString(*CSTRING cstr),PASCAL,RAW,NAME('OutputDebugStringA')      
+    END
+  END
+
+fsColumnNames       QUEUE,TYPE
+Name                  STRING(60)
+UpperName             STRING(60)
+FieldUpperName        STRING(60)
+                    END
+
+fsColumnValues      QUEUE,TYPE
+Value                 &STRING
+                    END
+
+fsLineValues        QUEUE,TYPE
+ColumnValues          &fsColumnValues
+                    END
+
 
 !Local Class, inspired by StringClass in xmlclass.inc/TreeViewWrap.clw
 fsDynString         CLASS,TYPE
@@ -2195,32 +2250,41 @@ FlatSerializer.GetLinesCount    PROCEDURE()!,LONG
   CODE
   
   RETURN RECORDS(SELF.LineValues)
+
+FlatSerializer.GetColumnsCount PROCEDURE()!,LONG
+  CODE
   
-FlatSerializer.GetValueByName   PROCEDURE(STRING pColumnName,LONG pLine = 1)!,STRING  
+  RETURN RECORDS(SELF.ColumnNames)
+
+FlatSerializer.GetColumnName    PROCEDURE(LONG pColumnNumber)!,STRING
+  CODE
+  
+  CLEAR(SELF.ColumnNames)
+  GET(SELF.ColumnNames,pColumnNumber)
+  RETURN CLIP(SELF.ColumnNames.Name)
+
+FlatSerializer.GetValueByName   PROCEDURE(STRING pColumnName,LONG pLineNumber = 1,LONG pDeformatOptions = 1)!,STRING
   CODE
 
   CLEAR(SELF.ColumnNames)
   SELF.ColumnNames.UpperName = UPPER(pColumnName)
   GET(SELF.ColumnNames,SELF.ColumnNames.UpperName)
   IF ERRORCODE() THEN RETURN ''.
-
   CLEAR(SELF.LineValues)
-  GET(SELF.LineValues,pLine)
+  GET(SELF.LineValues,pLineNumber)
   IF ERRORCODE() THEN RETURN ''.
-  
   CLEAR(SELF.LineValues.ColumnValues)
   GET(SELF.LineValues.ColumnValues,POINTER(SELF.ColumnNames))
   IF ERRORCODE() THEN RETURN ''.
+  RETURN SELF.DeformatColumnValue(pDeformatOptions)
   
-  RETURN SELF.DeformatColumnValue() 
-  
-FlatSerializer.DeSerializeToGroup   PROCEDURE(*GROUP pGroup,LONG pLine = 1)
+FlatSerializer.DeSerializeToGroup   PROCEDURE(*GROUP pGroup,LONG pLineNumber = 1)
 idx                                   LONG
   CODE
   
   SELF.ParseGroup(pGroup)
   CLEAR(SELF.LineValues)
-  GET(SELF.LineValues,pLine)
+  GET(SELF.LineValues,pLineNumber)
   IF ERRORCODE() THEN RETURN.
   LOOP idx = 1 TO RECORDS(SELF.ColumnNames)
     GET(SELF.ColumnNames,idx)
@@ -2230,7 +2294,7 @@ idx                                   LONG
     SELF.Fields.UpperName = SELF.ColumnNames.FieldUpperName
     GET(SELF.Fields,SELF.Fields.UpperName)
     IF ERRORCODE() THEN CYCLE.
-    SELF.Fields.Ref = SELF.DeformatColumnValue()
+    SELF.Fields.Ref = SELF.DeformatColumnValueForField()
   .
   
 FlatSerializer.DeSerializeToQueue   PROCEDURE(*QUEUE pQueue)
@@ -2421,7 +2485,7 @@ FlatSerializer.FormatFieldValue  PROCEDURE()!,STRING,PRIVATE
   .
   RETURN ''
 
-FlatSerializer.DeformatColumnValue  PROCEDURE()!,STRING,PRIVATE
+FlatSerializer.DeformatColumnValueForField  PROCEDURE()!,STRING,PRIVATE
   CODE  
 
   CASE SELF.Fields.TufoType
@@ -2433,6 +2497,34 @@ FlatSerializer.DeformatColumnValue  PROCEDURE()!,STRING,PRIVATE
       RETURN SELF.LineValues.ColumnValues.Value
   .
   RETURN ''
+    
+FlatSerializer.DeformatColumnValue  PROCEDURE(LONG pDeformatOptions)!,STRING,PRIVATE
+retint                                LONG
+retstr                                fsDynString
+  CODE  
+  
+  IF NOT SELF.LineValues.ColumnValues.Value THEN RETURN ''.  
+  IF BAND(pDeformatOptions,fs:DeformatDates)
+    retint = DEFORMAT(SELF.LineValues.ColumnValues.Value,SELF.DatesPicture)
+    IF CLIP(LEFT(FORMAT(retint,SELF.DatesPicture))) = CLIP(LEFT(SELF.LineValues.ColumnValues.Value))
+      RETURN retint
+    .
+  .
+  IF BAND(pDeformatOptions,fs:DeformatTimes)
+    retint = DEFORMAT(SELF.LineValues.ColumnValues.Value,SELF.TimesPicture)
+    IF CLIP(LEFT(FORMAT(retint,SELF.TimesPicture))) = CLIP(LEFT(SELF.LineValues.ColumnValues.Value))
+      RETURN retint
+    .
+  .
+  IF SELF.ColumnSep <> ',' AND BAND(pDeformatOptions,fs:DeformatCommas) 
+    retstr.set(LEFT(CLIP(SELF.LineValues.ColumnValues.Value)))
+    retstr.replace(',','')
+    IF NUMERIC(retstr.get())
+      RETURN retstr.get()
+    .
+  .  
+  RETURN CLIP(SELF.LineValues.ColumnValues.Value)
+
   
 FlatSerializer.EscapeQuotes PROCEDURE(STRING pText)!,STRING,PRIVATE
 value fsDynString
@@ -2773,30 +2865,11 @@ PROPERTY:END
 !OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 !SOFTWARE.
 
-fsFieldsQueue       QUEUE,TYPE
-Name                  STRING(60)
-UpperName             STRING(60)
-Ref                   ANY
-IsGroup               LONG
-Level                 LONG
-TufoType              LONG
-TufoAddress           LONG
-TufoSize              LONG
-                    END
+fs:DeformatDates    EQUATE(0001b)
+fs:DeformatTimes    EQUATE(0010b)
+fs:DeformatCommas   EQUATE(0100b)
+fs:DeformatAll      EQUATE(0111b)
 
-fsColumnNames       QUEUE,TYPE
-Name                  STRING(60)
-UpperName             STRING(60)
-FieldUpperName        STRING(60)
-                    END
-
-fsColumnValues      QUEUE,TYPE
-Value                 &STRING
-                    END
-
-fsLineValues        QUEUE,TYPE
-ColumnValues          &fsColumnValues
-                    END
 
 FlatSerializer      CLASS,MODULE('FlatSerializer'),LINK('FlatSerializer'),TYPE
 Init                  PROCEDURE(<STRING pColumnSep>,<STRING pLineBreakString>,<STRING pQuoteSymbol>)
@@ -2828,8 +2901,10 @@ AddFieldAliasByReference  PROCEDURE(*? pField,STRING pAlias)
 LoadString            PROCEDURE(STRING pText)
 LoadTextFile          PROCEDURE(STRING pFileName)
 GetLinesCount         PROCEDURE(),LONG
-GetValueByName        PROCEDURE(STRING pColumnName,LONG pLine = 1),STRING
-DeSerializeToGroup    PROCEDURE(*GROUP pGroup,LONG pLine = 1)
+GetColumnsCount       PROCEDURE(),LONG
+GetColumnName         PROCEDURE(LONG pColumnNumber),STRING
+GetValueByName        PROCEDURE(STRING pColumnName,LONG pLineNumber = 1,LONG pDeformatOptions = fs:DeformatAll),STRING
+DeSerializeToGroup    PROCEDURE(*GROUP pGroup,LONG pLineNumber = 1)
 DeSerializeToQueue    PROCEDURE(*QUEUE pQueue)
 DeSerializeToFile     PROCEDURE(*FILE pFile)
 
@@ -2842,7 +2917,8 @@ ParseGroup            PROCEDURE(*GROUP pGroup,LONG pLevel = 1),PRIVATE
 IsExcluded            PROCEDURE(),BOOL,PRIVATE
 FieldsInGroup         PROCEDURE(*GROUP pGroup),LONG,PRIVATE
 FormatFieldValue      PROCEDURE(),STRING,PRIVATE
-DeformatColumnValue   PROCEDURE(),STRING,PRIVATE
+DeformatColumnValueForField   PROCEDURE(),STRING,PRIVATE
+DeformatColumnValue   PROCEDURE(LONG pDeformatOptions),STRING,PRIVATE
 EscapeQuotes          PROCEDURE(STRING pText),STRING,PRIVATE
 UnEscapeQuotes        PROCEDURE(STRING pText),STRING,PRIVATE
 BlankSeparators       PROCEDURE(STRING pText),STRING,PRIVATE
@@ -2873,11 +2949,16 @@ ColumnNames           &fsColumnNames,PRIVATE
 LineValues            &fsLineValues,PRIVATE
                     END
 
-  MAP
-    MODULE('win32')
-      fs_OutputDebugString(*CSTRING cstr),PASCAL,RAW,NAME('OutputDebugStringA')      
-    END
-  END
+fsFieldsQueue       QUEUE,TYPE
+Name                  STRING(60)
+UpperName             STRING(60)
+Ref                   ANY
+IsGroup               LONG
+Level                 LONG
+TufoType              LONG
+TufoAddress           LONG
+TufoSize              LONG
+                    END
 [END]
 [END]
 [END]

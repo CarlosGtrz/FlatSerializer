@@ -25,30 +25,11 @@
 !OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 !SOFTWARE.
 
-fsFieldsQueue       QUEUE,TYPE
-Name                  STRING(60)
-UpperName             STRING(60)
-Ref                   ANY
-IsGroup               LONG
-Level                 LONG
-TufoType              LONG
-TufoAddress           LONG
-TufoSize              LONG
-                    END
+fs:DeformatDates    EQUATE(0001b)
+fs:DeformatTimes    EQUATE(0010b)
+fs:DeformatCommas   EQUATE(0100b)
+fs:DeformatAll      EQUATE(0111b)
 
-fsColumnNames       QUEUE,TYPE
-Name                  STRING(60)
-UpperName             STRING(60)
-FieldUpperName        STRING(60)
-                    END
-
-fsColumnValues      QUEUE,TYPE
-Value                 &STRING
-                    END
-
-fsLineValues        QUEUE,TYPE
-ColumnValues          &fsColumnValues
-                    END
 
 FlatSerializer      CLASS,MODULE('FlatSerializer'),LINK('FlatSerializer'),TYPE
 Init                  PROCEDURE(<STRING pColumnSep>,<STRING pLineBreakString>,<STRING pQuoteSymbol>)
@@ -80,8 +61,10 @@ AddFieldAliasByReference  PROCEDURE(*? pField,STRING pAlias)
 LoadString            PROCEDURE(STRING pText)
 LoadTextFile          PROCEDURE(STRING pFileName)
 GetLinesCount         PROCEDURE(),LONG
-GetValueByName        PROCEDURE(STRING pColumnName,LONG pLine = 1),STRING
-DeSerializeToGroup    PROCEDURE(*GROUP pGroup,LONG pLine = 1)
+GetColumnsCount       PROCEDURE(),LONG
+GetColumnName         PROCEDURE(LONG pColumnNumber),STRING
+GetValueByName        PROCEDURE(STRING pColumnName,LONG pLineNumber = 1,LONG pDeformatOptions = fs:DeformatAll),STRING
+DeSerializeToGroup    PROCEDURE(*GROUP pGroup,LONG pLineNumber = 1)
 DeSerializeToQueue    PROCEDURE(*QUEUE pQueue)
 DeSerializeToFile     PROCEDURE(*FILE pFile)
 
@@ -94,7 +77,8 @@ ParseGroup            PROCEDURE(*GROUP pGroup,LONG pLevel = 1),PRIVATE
 IsExcluded            PROCEDURE(),BOOL,PRIVATE
 FieldsInGroup         PROCEDURE(*GROUP pGroup),LONG,PRIVATE
 FormatFieldValue      PROCEDURE(),STRING,PRIVATE
-DeformatColumnValue   PROCEDURE(),STRING,PRIVATE
+DeformatColumnValueForField   PROCEDURE(),STRING,PRIVATE
+DeformatColumnValue   PROCEDURE(LONG pDeformatOptions),STRING,PRIVATE
 EscapeQuotes          PROCEDURE(STRING pText),STRING,PRIVATE
 UnEscapeQuotes        PROCEDURE(STRING pText),STRING,PRIVATE
 BlankSeparators       PROCEDURE(STRING pText),STRING,PRIVATE
@@ -125,8 +109,13 @@ ColumnNames           &fsColumnNames,PRIVATE
 LineValues            &fsLineValues,PRIVATE
                     END
 
-  MAP
-    MODULE('win32')
-      fs_OutputDebugString(*CSTRING cstr),PASCAL,RAW,NAME('OutputDebugStringA')      
-    END
-  END
+fsFieldsQueue       QUEUE,TYPE
+Name                  STRING(60)
+UpperName             STRING(60)
+Ref                   ANY
+IsGroup               LONG
+Level                 LONG
+TufoType              LONG
+TufoAddress           LONG
+TufoSize              LONG
+                    END

@@ -175,21 +175,41 @@ GetLinesCount (),LONG
 Number of lines with values loaded.
 
 ```
-GetValueByName (STRING pColumnName,LONG pLine = 1),STRING
+GetValueByName (STRING pColumnName,LONG pLineNumber = 1,LONG pDeformatOptions = fs:DeformatAll),STRING
 ```
 Returns a string with the value of the named column at a particular line number.
+* DeformatOptions: One or more flags: `fs:DeformatDates`, `fs:DeformatTimes`, `fs:DeformatCommas`, `fs:DeformatAll` or `fs:DeformatNothing`
 
 Example:
 ```
   fs.Init
   fs.LoadTextFile('testqueue.csv')
   LOOP lin = 1 TO fs.GetLinesCount()
-    loc:name = fs.GetValueByName('Name',lin)
+    loc:name = fs.GetValueByName('Name',lin,fs:DeformatCommas) !remove commas from numbers, leave dates and times as is
   END  
 ```
 
 ```
-DeSerializeToGroup (*GROUP pGroup,LONG pLine = 1)
+GetColumnsCount (),LONG
+```
+Number of columns loaded.
+
+```
+GetColumnName (STRING pColumnNumber),STRING
+```
+Returns a string with the name of the column.
+
+Example:
+```
+  fs.Init
+  fs.LoadTextFile('testqueue.csv')
+  LOOP col = 1 TO fs.GetColumnsCount()
+    loc:colname = fs.GetColumnName(col)
+  END  
+```
+
+```
+DeSerializeToGroup (*GROUP pGroup,LONG pLineNumber = 1)
 DeSerializeToQueue (*QUEUE pQueue)
 DeSerializeToFile (*FILE pFile)
 ```

@@ -27,6 +27,27 @@
 !OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 !SOFTWARE.
 
+  MAP
+    MODULE('win32')
+      fs_OutputDebugString(*CSTRING cstr),PASCAL,RAW,NAME('OutputDebugStringA')      
+    END
+  END
+
+fsColumnNames       QUEUE,TYPE
+Name                  STRING(60)
+UpperName             STRING(60)
+FieldUpperName        STRING(60)
+                    END
+
+fsColumnValues      QUEUE,TYPE
+Value                 &STRING
+                    END
+
+fsLineValues        QUEUE,TYPE
+ColumnValues          &fsColumnValues
+                    END
+
+
 !Local Class, inspired by StringClass in xmlclass.inc/TreeViewWrap.clw
 fsDynString         CLASS,TYPE
 s                     &STRING,PRIVATE
@@ -384,32 +405,41 @@ FlatSerializer.GetLinesCount    PROCEDURE()!,LONG
   CODE
   
   RETURN RECORDS(SELF.LineValues)
+
+FlatSerializer.GetColumnsCount PROCEDURE()!,LONG
+  CODE
   
-FlatSerializer.GetValueByName   PROCEDURE(STRING pColumnName,LONG pLine = 1)!,STRING  
+  RETURN RECORDS(SELF.ColumnNames)
+
+FlatSerializer.GetColumnName    PROCEDURE(LONG pColumnNumber)!,STRING
+  CODE
+  
+  CLEAR(SELF.ColumnNames)
+  GET(SELF.ColumnNames,pColumnNumber)
+  RETURN CLIP(SELF.ColumnNames.Name)
+
+FlatSerializer.GetValueByName   PROCEDURE(STRING pColumnName,LONG pLineNumber = 1,LONG pDeformatOptions = 1)!,STRING
   CODE
 
   CLEAR(SELF.ColumnNames)
   SELF.ColumnNames.UpperName = UPPER(pColumnName)
   GET(SELF.ColumnNames,SELF.ColumnNames.UpperName)
   IF ERRORCODE() THEN RETURN ''.
-
   CLEAR(SELF.LineValues)
-  GET(SELF.LineValues,pLine)
+  GET(SELF.LineValues,pLineNumber)
   IF ERRORCODE() THEN RETURN ''.
-  
   CLEAR(SELF.LineValues.ColumnValues)
   GET(SELF.LineValues.ColumnValues,POINTER(SELF.ColumnNames))
   IF ERRORCODE() THEN RETURN ''.
+  RETURN SELF.DeformatColumnValue(pDeformatOptions)
   
-  RETURN SELF.DeformatColumnValue() 
-  
-FlatSerializer.DeSerializeToGroup   PROCEDURE(*GROUP pGroup,LONG pLine = 1)
+FlatSerializer.DeSerializeToGroup   PROCEDURE(*GROUP pGroup,LONG pLineNumber = 1)
 idx                                   LONG
   CODE
   
   SELF.ParseGroup(pGroup)
   CLEAR(SELF.LineValues)
-  GET(SELF.LineValues,pLine)
+  GET(SELF.LineValues,pLineNumber)
   IF ERRORCODE() THEN RETURN.
   LOOP idx = 1 TO RECORDS(SELF.ColumnNames)
     GET(SELF.ColumnNames,idx)
@@ -419,7 +449,7 @@ idx                                   LONG
     SELF.Fields.UpperName = SELF.ColumnNames.FieldUpperName
     GET(SELF.Fields,SELF.Fields.UpperName)
     IF ERRORCODE() THEN CYCLE.
-    SELF.Fields.Ref = SELF.DeformatColumnValue()
+    SELF.Fields.Ref = SELF.DeformatColumnValueForField()
   .
   
 FlatSerializer.DeSerializeToQueue   PROCEDURE(*QUEUE pQueue)
@@ -610,7 +640,7 @@ FlatSerializer.FormatFieldValue  PROCEDURE()!,STRING,PRIVATE
   .
   RETURN ''
 
-FlatSerializer.DeformatColumnValue  PROCEDURE()!,STRING,PRIVATE
+FlatSerializer.DeformatColumnValueForField  PROCEDURE()!,STRING,PRIVATE
   CODE  
 
   CASE SELF.Fields.TufoType
@@ -622,6 +652,34 @@ FlatSerializer.DeformatColumnValue  PROCEDURE()!,STRING,PRIVATE
       RETURN SELF.LineValues.ColumnValues.Value
   .
   RETURN ''
+    
+FlatSerializer.DeformatColumnValue  PROCEDURE(LONG pDeformatOptions)!,STRING,PRIVATE
+retint                                LONG
+retstr                                fsDynString
+  CODE  
+  
+  IF NOT SELF.LineValues.ColumnValues.Value THEN RETURN ''.  
+  IF BAND(pDeformatOptions,fs:DeformatDates)
+    retint = DEFORMAT(SELF.LineValues.ColumnValues.Value,SELF.DatesPicture)
+    IF CLIP(LEFT(FORMAT(retint,SELF.DatesPicture))) = CLIP(LEFT(SELF.LineValues.ColumnValues.Value))
+      RETURN retint
+    .
+  .
+  IF BAND(pDeformatOptions,fs:DeformatTimes)
+    retint = DEFORMAT(SELF.LineValues.ColumnValues.Value,SELF.TimesPicture)
+    IF CLIP(LEFT(FORMAT(retint,SELF.TimesPicture))) = CLIP(LEFT(SELF.LineValues.ColumnValues.Value))
+      RETURN retint
+    .
+  .
+  IF SELF.ColumnSep <> ',' AND BAND(pDeformatOptions,fs:DeformatCommas) 
+    retstr.set(LEFT(CLIP(SELF.LineValues.ColumnValues.Value)))
+    retstr.replace(',','')
+    IF NUMERIC(retstr.get())
+      RETURN retstr.get()
+    .
+  .  
+  RETURN CLIP(SELF.LineValues.ColumnValues.Value)
+
   
 FlatSerializer.EscapeQuotes PROCEDURE(STRING pText)!,STRING,PRIVATE
 value fsDynString

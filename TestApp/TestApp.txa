@@ -733,7 +733,7 @@ MODIFIED '2021/06/12' '11:00:56'
 NAME Tests
 [COMMON]
 FROM ABC Source
-MODIFIED '2021/10/30' '15:50:40'
+MODIFIED '2021/11/07' '22:12:18'
 [FILES]
 [OTHERS]
 Orders
@@ -790,8 +790,10 @@ PROPERTY:END
   
   DO Test100k
   
-  DO TestGroup1 
-    
+  DO TestGroup1ColumnCountName
+
+  DO TestGroupSerializeWithAlias
+
   DebugView('All tests done')
   
   !StringToFile(TestsResult,'TestsResult.txt')
@@ -1793,7 +1795,7 @@ clk LONG
   !After replacing ANY with fsDynString: No noticeable change, will probably help serializing
   !After resolving aliases once: 18.25
   
-TestGroup1          ROUTINE  
+TestGroup1ColumnCountName   ROUTINE  
   DATA
 Group1  GROUP
 TestString    STRING(100)
@@ -1824,6 +1826,51 @@ fs  FlatSerializer
   AssertEqual(Group1.TestDate,fs.GetValueByName(fs.GetColumnName(3)),'TestGroup1: column value')
   AssertEqual(Group1.TestTime,fs.GetValueByName(fs.GetColumnName(4)),'TestGroup1: column value')
 
+TestGroupSerializeWithAlias ROUTINE  
+  DATA
+gr  GROUP 
+Num   LONG 
+Name  STRING(30),NAME('Name') 
+DateTime  GROUP 
+Date        DATE,NAME('Date|Attribute') 
+Time        TIME 
+          .
+Money DECIMAL(15,2) 
+    END
+
+fs  FlatSerializer
+names   ANY
+values  ANY
+groupnv ANY
+  CODE  
+  
+  !Arrange
+  CLEAR(gr)
+  gr.Num = 1234567890
+  gr.Name = 'Name Abc Def'
+  gr.DateTime.Date = DATE(11,28,2021)
+  gr.DateTime.Time = 1+15*60*60*100+16*60*100+17*100 !15:16:17  
+  gr.Money = 1234567.89
+  
+  !Act
+  fs.Init
+  fs.SetSerializeUsingAlias(TRUE)
+  fs.AddExcludedFieldByReference(gr.DateTime)
+  fs.AddFieldAliasByReference(gr.Money,'Price')
+  fs.AddFieldAliasByReference(gr.Name,'Full Name')
+  fs.AddFieldAliasByReference(gr.DateTime.Date,'Shipping date')
+  fs.AddFieldAliasByReference(gr.DateTime.Date,'S. Date')
+  names = fs.SerializeGroupNames(gr)
+  values = fs.SerializeGroupValues(gr)
+  groupnv = fs.SerializeGroup(gr)
+  fs.LoadString(groupnv)
+  CLEAR(gr)  
+  fs.DeSerializeToGroup(gr)
+  !Assert
+  AssertEqual('NUM,Full Name,Shipping date,TIME,Price',names,'TestGroupSerializeWithAlias: Group names')
+  AssertEqual('1234567890,"Name Abc Def",2021-11-28,15:16:17,1234567.89',values,'TestGroupSerializeWithAlias: Group values') 
+  AssertEqual('NUM,Full Name,Shipping date,TIME,Price<13,10>1234567890,"Name Abc Def",2021-11-28,15:16:17,1234567.89<13,10>',groupnv,'TestGroupSerializeWithAlias: Group names and values') 
+  AssertEqual(groupnv,fs.SerializeGroup(gr),'TestGroupSerializeWithAlias: Deserialize/Serialize')   
 [END]
 [END]
 [END]
@@ -1836,7 +1883,7 @@ MODIFIED '2021/08/02' '21:37:40'
 NAME FlatSerializer
 [COMMON]
 FROM ABC SourceClass
-MODIFIED '2021/10/30' '18:33:07'
+MODIFIED '2021/11/07' '22:11:09'
 [PROMPTS]
 %GenerateMemberAsGeneric LONG  (1)
 %GenerateOpenClose LONG  (0)
@@ -1927,6 +1974,7 @@ FlatSerializer.Init PROCEDURE(<STRING pColumnSep>,<STRING pLineBreakString>,<STR
   SELF.IncludeHeaders = TRUE
   SELF.AlwaysQuoteStrings = TRUE
   SELF.RemovePrefixes = TRUE
+  SELF.SerializeUsingAlias = FALSE 
   SELF.ReadLinesWithoutColumnSeparators = FALSE
   SELF.GroupTufoType = 0
   SELF.GroupTufoAddress = 0
@@ -1982,6 +2030,11 @@ FlatSerializer.SetRemovePrefixes   PROCEDURE(BOOL pVal)
   
   SELF.RemovePrefixes = pVal  
 
+FlatSerializer.SetSerializeUsingAlias   PROCEDURE(BOOL pVal)
+  CODE
+  
+  SELF.SerializeUsingAlias = pVal  
+
 FlatSerializer.SetReadLinesWithoutColumnSeparators  PROCEDURE(BOOL pVal)
   CODE
   
@@ -2005,16 +2058,22 @@ FlatSerializer.AddExcludedFieldByReference  PROCEDURE(*? pField)
 
 FlatSerializer.SerializeGroupNames  PROCEDURE(*GROUP pGroup)!,STRING
 names                                 fsDynString
+nam                                   LIKE(SELF.Fields.Name)
 idx                                   LONG
   CODE
   
   SELF.ParseGroup(pGroup)
   LOOP idx = 1 TO RECORDS(SELF.Fields)
     GET(SELF.Fields,idx)
-    names.append(CLIP(SELF.Fields.Name),SELF.ColumnSep)
+    IF SELF.SerializeUsingAlias
+      nam = SELF.FindSerializeAlias()
+    ELSE
+      nam = SELF.Fields.Name
+    .    
+    names.append(CLIP(nam),SELF.ColumnSep)
   .
   RETURN names.get()
-  
+
 FlatSerializer.SerializeGroupValues PROCEDURE(*GROUP pGroup)!,STRING
 values                                fsDynString
 idx                                   LONG
@@ -2319,7 +2378,7 @@ fgr                                   &GROUP
     SELF.DeSerializeToGroup(fgr,idx)
     ADD(pFile)
   .
-  
+   
 FlatSerializer.ParseGroup   PROCEDURE(*GROUP pGroup,LONG pLevel = 1)!,PRIVATE
 idx                           LONG
 nam                           LIKE(SELF.Fields.Name)
@@ -2333,7 +2392,10 @@ gTufoSize                     LONG
   
   IF pLevel = 1    
     SELF.GetTufoInfo(pGroup,gTufoType,gTufoAddress,gTufoType)
-    IF SELF.GroupTufoType = gTufoType AND SELF.GroupTufoAddress = gTufoAddress AND SELF.GroupTufoSize = gTufoSize THEN RETURN. !Don't parse again same group
+    IF SELF.GroupTufoType = gTufoType AND SELF.GroupTufoAddress = gTufoAddress AND SELF.GroupTufoSize = gTufoSize  !Don't parse again same group
+      SELF.ResolveAliases
+      RETURN
+    . 
     SELF.GroupTufoType = gTufoType
     SELF.GroupTufoAddress = gTufoAddress
     SELF.GroupTufoSize = gTufoSize
@@ -2377,13 +2439,16 @@ gTufoSize                     LONG
     .
   .
   
-  IF pLevel = 1  
-    DO ResolveAliases
+  IF pLevel = 1    
+    SELF.ResolveAliases
   .
   
-ResolveAliases      ROUTINE
+FlatSerializer.ResolveAliases   PROCEDURE
+idx                               LONG
+  CODE  
 
-  IF NOT RECORDS(SELF.ColumnNames) THEN EXIT.
+  !Resolve Alias names to Field names if a file is already loaded
+  IF NOT RECORDS(SELF.ColumnNames) THEN RETURN.
   
   !Default link  
   LOOP idx = 1 TO RECORDS(SELF.ColumnNames)
@@ -2391,7 +2456,7 @@ ResolveAliases      ROUTINE
     SELF.ColumnNames.FieldUpperName = SELF.ColumnNames.UpperName
     PUT(SELF.ColumnNames)
   .  
-  IF NOT RECORDS(SELF.FieldsAlias) THEN EXIT.  
+  IF NOT RECORDS(SELF.FieldsAlias) THEN RETURN.  
   
   !Link field name to column name
   LOOP idx = 1 TO RECORDS(SELF.ColumnNames)
@@ -2524,7 +2589,6 @@ retstr                                fsDynString
     .
   .  
   RETURN CLIP(SELF.LineValues.ColumnValues.Value)
-
   
 FlatSerializer.EscapeQuotes PROCEDURE(STRING pText)!,STRING,PRIVATE
 value fsDynString
@@ -2551,6 +2615,18 @@ value                             fsDynString
   value.replace(SELF.LineBreakString,' ')
   value.replace(SELF.QuoteSymbol,' ')
   RETURN CLIP(value.get())
+
+FlatSerializer.FindSerializeAlias   PROCEDURE()!,STRING
+  CODE
+  
+  CLEAR(SELF.FieldsAlias)
+  SELF.FieldsAlias.TufoType = SELF.Fields.TufoType
+  SELF.FieldsAlias.TufoAddress = SELF.Fields.TufoAddress
+  SELF.FieldsAlias.TufoSize = SELF.Fields.TufoSize
+  GET(SELF.FieldsAlias,SELF.FieldsAlias.TufoType,SELF.FieldsAlias.TufoAddress,SELF.FieldsAlias.TufoSize)
+  IF NOT ERRORCODE() THEN RETURN SELF.FieldsAlias.Name.
+    
+  RETURN SELF.Fields.Name
 
 FlatSerializer.GetTufoInfo  PROCEDURE(*? pAny,*LONG pType,*LONG pAddress,*LONG pSize)
 !REGION TUFO
@@ -2869,7 +2945,7 @@ fs:DeformatDates    EQUATE(0001b)
 fs:DeformatTimes    EQUATE(0010b)
 fs:DeformatCommas   EQUATE(0100b)
 fs:DeformatAll      EQUATE(0111b)
-
+fs:DeformatNothing  EQUATE(0000b)
 
 FlatSerializer      CLASS,MODULE('FlatSerializer'),LINK('FlatSerializer'),TYPE
 Init                  PROCEDURE(<STRING pColumnSep>,<STRING pLineBreakString>,<STRING pQuoteSymbol>)
@@ -2882,6 +2958,7 @@ SetTimesPicture       PROCEDURE(STRING pPic)
 SetIncludeHeaders     PROCEDURE(BOOL pVal)
 SetAlwaysQuoteStrings PROCEDURE(BOOL pVal)
 SetRemovePrefixes     PROCEDURE(BOOL pVal)
+SetSerializeUsingAlias    PROCEDURE(BOOL pVal)
 SetReadLinesWithoutColumnSeparators   PROCEDURE(BOOL pVal)
 
 !Serialize
@@ -2914,6 +2991,7 @@ StringFromTextFile    PROCEDURE(STRING pFileName),*STRING!,PRIVATE
 
 !Private
 ParseGroup            PROCEDURE(*GROUP pGroup,LONG pLevel = 1),PRIVATE
+ResolveAliases        PROCEDURE,PRIVATE
 IsExcluded            PROCEDURE(),BOOL,PRIVATE
 FieldsInGroup         PROCEDURE(*GROUP pGroup),LONG,PRIVATE
 FormatFieldValue      PROCEDURE(),STRING,PRIVATE
@@ -2922,6 +3000,7 @@ DeformatColumnValue   PROCEDURE(LONG pDeformatOptions),STRING,PRIVATE
 EscapeQuotes          PROCEDURE(STRING pText),STRING,PRIVATE
 UnEscapeQuotes        PROCEDURE(STRING pText),STRING,PRIVATE
 BlankSeparators       PROCEDURE(STRING pText),STRING,PRIVATE
+FindSerializeAlias    PROCEDURE(),STRING,PRIVATE
 GetTufoInfo           PROCEDURE(*? pAny,*LONG pType,*LONG pAddress,*LONG pSize),PRIVATE
 Free                  PROCEDURE(fsFieldsQueue pQueue),PRIVATE
 FreeLineValues        PROCEDURE,PRIVATE
@@ -2938,6 +3017,7 @@ TimesPicture          STRING(10),PRIVATE
 IncludeHeaders        BOOL,PRIVATE
 AlwaysQuoteStrings    BOOL,PRIVATE
 RemovePrefixes        BOOL,PRIVATE
+SerializeUsingAlias   BOOL,PRIVATE
 ReadLinesWithoutColumnSeparators  BOOL,PRIVATE
 GroupTufoType         LONG,PRIVATE
 GroupTufoAddress      LONG,PRIVATE

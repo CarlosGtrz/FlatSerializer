@@ -114,12 +114,14 @@ Change default pictures for dates and times. Defaults are `'@D10-B'`
 SetIncludeHeaders (BOOL)
 SetAlwaysQuoteStrings (BOOL)
 SetRemovePrefixes (BOOL)
+SetSerializeUsingAlias (BOOL)
 SetReadLinesWithoutColumnSeparators (BOOL)
 ```
 Change the behavior of the instance:
-* Inclue Headers (default `TRUE`): If the serialized string or file should include the column names in the first line
-* Always Quote Strings (default `TRUE`): If the string fields should always be enclosed with quote symbols. If set to `FALSE`, quotes are only used if the string includes a comma or new line
-* Remove Prefixes (default `TRUE`): If the structure's prefix should be removed from the field name
+* Inclue Headers (default `TRUE`): If the serialized string or file should include the column names in the first line.
+* Always Quote Strings (default `TRUE`): If the string fields should always be enclosed with quote symbols. If set to `FALSE`, quotes are only used if the string includes a comma or new line.
+* Remove Prefixes (default `TRUE`): If the structure's prefix should be removed from the field name.
+* Serialize Using Alias (default `FALSE`): Use the first alias added with `AddFieldAliasByReference` as column name when serializing, overriding the fields label and `NAME` attribute.
 * ReadLinesWithoutColumnSeparators (default `FALSE`): When set to the default `FALSE`, the class will ignore lines that don't have at least one comma. Useful if the file include titles or documentation in the first few lines. Should be set to `TRUE` if reading files with only one column.
 
 ## Serialization

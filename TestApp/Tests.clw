@@ -47,8 +47,14 @@ FilesOpened     BYTE(0)
 
   DO TestFileFromToTextFile
   
-  DO WSTest   
+  DO WSTest     
   
+  DO Test100k
+  
+  DO TestGroup1ColumnCountName
+
+  DO TestGroupSerializeWithAlias
+
   DebugView('All tests done')
   
   !StringToFile(TestsResult,'TestsResult.txt')
@@ -904,6 +910,192 @@ txt STRING('TITLE TEXT<13,10>'&|
   GET(LotePagosList,1)
   AssertEqual('M:9 D:40 P:24493 30-SEP-21 NAME ABC S DE RL DE CV',CLIP(LotePagosList.DatosPoliza),'WSTest')
   AssertEqual(FORMAT(DATE(8,27,21),@D10),FORMAT(LotePagosList.FechaFactura,@D10),'WSTest')
+  
+  
+Test100k            ROUTINE     
+  DATA
+!Created with CSVParse https://github.com/jslarve/CSVParseClass
+Employees   QUEUE
+EmpID         STRING(20)
+NamePrefix    STRING(10)
+FirstName     STRING(20)
+MiddleInitial STRING(10)
+LastName      STRING(20)
+Gender        STRING(10)
+EMail         STRING(40)
+FathersName   STRING(30)
+MothersName   STRING(30)
+MothersMaidenName STRING(20)
+DateofBirth   STRING(20)
+TimeofBirth   STRING(20)
+AgeinYrs      STRING(20)
+WeightinKgs   STRING(10)
+DateofJoining STRING(20)
+QuarterofJoining  STRING(10)
+HalfofJoining STRING(10)
+YearofJoining STRING(10)
+MonthofJoining    STRING(10)
+MonthNameofJoining    STRING(20)
+ShortMonth    STRING(10)
+DayofJoining  STRING(10)
+DOWofJoining  STRING(20)
+ShortDOW      STRING(10)
+AgeinCompanyYears STRING(20)
+Salary        STRING(20)
+LastHike      STRING(10)
+SSN           STRING(20)
+PhoneNo       STRING(20)
+PlaceName     STRING(20)
+County        STRING(20)
+City          STRING(20)
+State         STRING(10)
+Zip           STRING(20)
+Region        STRING(20)
+UserName      STRING(20)
+Password      STRING(30)
+            END
+fs  FlatSerializer
+clk LONG
+  CODE  
+  
+  !Arrange
+  fs.Init
+  fs.AddFieldAliasByReference(Employees.EmpID,                    'Emp ID')
+  fs.AddFieldAliasByReference(Employees.NamePrefix,               'Name Prefix')
+  fs.AddFieldAliasByReference(Employees.FirstName,                'First Name')
+  fs.AddFieldAliasByReference(Employees.MiddleInitial,            'Middle Initial')
+  fs.AddFieldAliasByReference(Employees.LastName,                 'Last Name')
+  fs.AddFieldAliasByReference(Employees.Gender,                   'Gender')
+  fs.AddFieldAliasByReference(Employees.EMail,                    'E Mail')
+  fs.AddFieldAliasByReference(Employees.FathersName,              'Father''s Name')
+  fs.AddFieldAliasByReference(Employees.MothersName,              'Mother''s Name')
+  fs.AddFieldAliasByReference(Employees.MothersMaidenName,        'Mother''s Maiden Name')
+  fs.AddFieldAliasByReference(Employees.DateofBirth,              'Date of Birth')
+  fs.AddFieldAliasByReference(Employees.TimeofBirth,              'Time of Birth')
+  fs.AddFieldAliasByReference(Employees.AgeinYrs,                 'Age in Yrs.')
+  fs.AddFieldAliasByReference(Employees.WeightinKgs,              'Weight in Kgs.')
+  fs.AddFieldAliasByReference(Employees.DateofJoining,            'Date of Joining')
+  fs.AddFieldAliasByReference(Employees.QuarterofJoining,         'Quarter of Joining')
+  fs.AddFieldAliasByReference(Employees.HalfofJoining,            'Half of Joining')
+  fs.AddFieldAliasByReference(Employees.YearofJoining,            'Year of Joining')
+  fs.AddFieldAliasByReference(Employees.MonthofJoining,           'Month of Joining')
+  fs.AddFieldAliasByReference(Employees.MonthNameofJoining,       'Month Name of Joining')
+  fs.AddFieldAliasByReference(Employees.ShortMonth,               'Short Month')
+  fs.AddFieldAliasByReference(Employees.DayofJoining,             'Day of Joining')
+  fs.AddFieldAliasByReference(Employees.DOWofJoining,             'DOW of Joining')
+  fs.AddFieldAliasByReference(Employees.ShortDOW,                 'Short DOW')
+  fs.AddFieldAliasByReference(Employees.AgeinCompanyYears,        'Age in Company (Years)')
+  fs.AddFieldAliasByReference(Employees.Salary,                   'Salary')
+  fs.AddFieldAliasByReference(Employees.LastHike,                 'Last % Hike')
+  fs.AddFieldAliasByReference(Employees.SSN,                      'SSN')
+  fs.AddFieldAliasByReference(Employees.PhoneNo,                  'Phone No.')
+  fs.AddFieldAliasByReference(Employees.PlaceName,                'Place Name')
+  fs.AddFieldAliasByReference(Employees.County,                   'County')
+  fs.AddFieldAliasByReference(Employees.City,                     'City')
+  fs.AddFieldAliasByReference(Employees.State,                    'State')
+  fs.AddFieldAliasByReference(Employees.Zip,                      'Zip')
+  fs.AddFieldAliasByReference(Employees.Region,                   'Region')
+  fs.AddFieldAliasByReference(Employees.UserName,                 'User Name')
+  fs.AddFieldAliasByReference(Employees.Password,                 'Password')
+
+  !Act
+  clk -= CLOCK()
+  fs.LoadTextFile('100000 Records.csv')  
+  fs.DeserializeToQueue(Employees)  
+  clk += CLOCK()  
+  
+  !Assert      
+  AssertEqual(100000,RECORDS(Employees),'Test 100k, time: '&clk/100) 
+  GET(Employees,1)
+  AssertEqual(882966,Employees.EmpID,'Test 100k, records')
+  GET(Employees,100000)
+  AssertEqual('Nelson Roan',Employees.FathersName,'Test 100k, field with alias')
+  AssertEqual('F+Fir3g9Js}wkt',Employees.Password,'Test 100k, last field in file')
+
+  !Baseline: 43.61 
+  !After &STRING and string slicing in TextFileToString: 37.31
+  !After readonly and buffers in TextFileToString: 36.81
+  !After precomputed lens in LoadString: 26.66  
+  !After optimizing deformatcolumnvalue: 24.02
+  !After replacing ANY with fsDynString: No noticeable change, will probably help serializing
+  !After resolving aliases once: 18.25
+  
+TestGroup1ColumnCountName   ROUTINE  
+  DATA
+Group1  GROUP
+TestString    STRING(100)
+TestNumber    DECIMAL(15,6)
+TestDate      DATE
+TestTime      TIME
+            END
+fs  FlatSerializer
+  CODE  
+  
+  !Arrange
+  Group1.TestString = 'abcdef'
+  Group1.TestNumber = 123456.78  
+  Group1.TestDate = DATE(10,30,2021)
+  Group1.TestTime = 13*60*60*100 + 32*60*100 + 25*100 + 1    
+
+  !Act
+  fs.LoadString(fs.SerializeGroup(Group1))
+  !Assert  
+  AssertEqual(4,fs.GetColumnsCount(),'TestGroup1: columnscount')
+  AssertEqual('TESTSTRING',fs.GetColumnName(1),'TestGroup1: column name')
+  AssertEqual('TESTNUMBER',fs.GetColumnName(2),'TestGroup1: column name')
+  AssertEqual('TESTDATE',fs.GetColumnName(3),'TestGroup1: column name')
+  AssertEqual('TESTTIME',fs.GetColumnName(4),'TestGroup1: column name')
+  
+  AssertEqual(Group1.TestString,fs.GetValueByName(fs.GetColumnName(1)),'TestGroup1: column value')
+  AssertEqual(Group1.TestNumber,fs.GetValueByName(fs.GetColumnName(2)),'TestGroup1: column value')
+  AssertEqual(Group1.TestDate,fs.GetValueByName(fs.GetColumnName(3)),'TestGroup1: column value')
+  AssertEqual(Group1.TestTime,fs.GetValueByName(fs.GetColumnName(4)),'TestGroup1: column value')
+
+TestGroupSerializeWithAlias ROUTINE  
+  DATA
+gr  GROUP 
+Num   LONG 
+Name  STRING(30),NAME('Name') 
+DateTime  GROUP 
+Date        DATE,NAME('Date|Attribute') 
+Time        TIME 
+          .
+Money DECIMAL(15,2) 
+    END
+
+fs  FlatSerializer
+names   ANY
+values  ANY
+groupnv ANY
+  CODE  
+  
+  !Arrange
+  CLEAR(gr)
+  gr.Num = 1234567890
+  gr.Name = 'Name Abc Def'
+  gr.DateTime.Date = DATE(11,28,2021)
+  gr.DateTime.Time = 1+15*60*60*100+16*60*100+17*100 !15:16:17  
+  gr.Money = 1234567.89
+  
+  !Act
+  fs.Init
+  fs.SetSerializeUsingAlias(TRUE)
+  fs.AddExcludedFieldByReference(gr.DateTime)
+  fs.AddFieldAliasByReference(gr.Money,'Price')
+  fs.AddFieldAliasByReference(gr.Name,'Full Name')
+  fs.AddFieldAliasByReference(gr.DateTime.Date,'Shipping date')
+  fs.AddFieldAliasByReference(gr.DateTime.Date,'S. Date')
+  names = fs.SerializeGroupNames(gr)
+  values = fs.SerializeGroupValues(gr)
+  groupnv = fs.SerializeGroup(gr)
+  fs.LoadString(groupnv)
+  CLEAR(gr)  
+  fs.DeSerializeToGroup(gr)
+  !Assert
+  AssertEqual('NUM,Full Name,Shipping date,TIME,Price',names,'TestGroupSerializeWithAlias: Group names')
+  AssertEqual('1234567890,"Name Abc Def",2021-11-28,15:16:17,1234567.89',values,'TestGroupSerializeWithAlias: Group values') 
+  AssertEqual('NUM,Full Name,Shipping date,TIME,Price<13,10>1234567890,"Name Abc Def",2021-11-28,15:16:17,1234567.89<13,10>',groupnv,'TestGroupSerializeWithAlias: Group names and values') 
+  AssertEqual(groupnv,fs.SerializeGroup(gr),'TestGroupSerializeWithAlias: Deserialize/Serialize')   
 !--------------------------------------
 OpenFiles  ROUTINE
   Access:Orders.Open()                                     ! Open File referenced in 'Other Files' so need to inform it's FileManager
@@ -937,4 +1129,3 @@ TestResult ANY
       TestResult  
   
   RETURN CHOOSE(pExpected = pActual)
-    

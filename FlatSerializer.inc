@@ -29,7 +29,7 @@ fs:DeformatDates    EQUATE(0001b)
 fs:DeformatTimes    EQUATE(0010b)
 fs:DeformatCommas   EQUATE(0100b)
 fs:DeformatAll      EQUATE(0111b)
-
+fs:DeformatNothing  EQUATE(0000b)
 
 FlatSerializer      CLASS,MODULE('FlatSerializer'),LINK('FlatSerializer'),TYPE
 Init                  PROCEDURE(<STRING pColumnSep>,<STRING pLineBreakString>,<STRING pQuoteSymbol>)
@@ -42,6 +42,7 @@ SetTimesPicture       PROCEDURE(STRING pPic)
 SetIncludeHeaders     PROCEDURE(BOOL pVal)
 SetAlwaysQuoteStrings PROCEDURE(BOOL pVal)
 SetRemovePrefixes     PROCEDURE(BOOL pVal)
+SetSerializeUsingAlias    PROCEDURE(BOOL pVal)
 SetReadLinesWithoutColumnSeparators   PROCEDURE(BOOL pVal)
 
 !Serialize
@@ -74,6 +75,7 @@ StringFromTextFile    PROCEDURE(STRING pFileName),*STRING!,PRIVATE
 
 !Private
 ParseGroup            PROCEDURE(*GROUP pGroup,LONG pLevel = 1),PRIVATE
+ResolveAliases        PROCEDURE,PRIVATE
 IsExcluded            PROCEDURE(),BOOL,PRIVATE
 FieldsInGroup         PROCEDURE(*GROUP pGroup),LONG,PRIVATE
 FormatFieldValue      PROCEDURE(),STRING,PRIVATE
@@ -82,6 +84,7 @@ DeformatColumnValue   PROCEDURE(LONG pDeformatOptions),STRING,PRIVATE
 EscapeQuotes          PROCEDURE(STRING pText),STRING,PRIVATE
 UnEscapeQuotes        PROCEDURE(STRING pText),STRING,PRIVATE
 BlankSeparators       PROCEDURE(STRING pText),STRING,PRIVATE
+FindSerializeAlias    PROCEDURE(),STRING,PRIVATE
 GetTufoInfo           PROCEDURE(*? pAny,*LONG pType,*LONG pAddress,*LONG pSize),PRIVATE
 Free                  PROCEDURE(fsFieldsQueue pQueue),PRIVATE
 FreeLineValues        PROCEDURE,PRIVATE
@@ -98,6 +101,7 @@ TimesPicture          STRING(10),PRIVATE
 IncludeHeaders        BOOL,PRIVATE
 AlwaysQuoteStrings    BOOL,PRIVATE
 RemovePrefixes        BOOL,PRIVATE
+SerializeUsingAlias   BOOL,PRIVATE
 ReadLinesWithoutColumnSeparators  BOOL,PRIVATE
 GroupTufoType         LONG,PRIVATE
 GroupTufoAddress      LONG,PRIVATE

@@ -82,6 +82,7 @@ FlatSerializer.Init PROCEDURE(<STRING pColumnSep>,<STRING pLineBreakString>,<STR
   SELF.IncludeHeaders = TRUE
   SELF.AlwaysQuoteStrings = TRUE
   SELF.RemovePrefixes = TRUE
+  SELF.SerializeUsingAlias = FALSE 
   SELF.ReadLinesWithoutColumnSeparators = FALSE
   SELF.GroupTufoType = 0
   SELF.GroupTufoAddress = 0
@@ -137,6 +138,11 @@ FlatSerializer.SetRemovePrefixes   PROCEDURE(BOOL pVal)
   
   SELF.RemovePrefixes = pVal  
 
+FlatSerializer.SetSerializeUsingAlias   PROCEDURE(BOOL pVal)
+  CODE
+  
+  SELF.SerializeUsingAlias = pVal  
+
 FlatSerializer.SetReadLinesWithoutColumnSeparators  PROCEDURE(BOOL pVal)
   CODE
   
@@ -160,16 +166,22 @@ FlatSerializer.AddExcludedFieldByReference  PROCEDURE(*? pField)
 
 FlatSerializer.SerializeGroupNames  PROCEDURE(*GROUP pGroup)!,STRING
 names                                 fsDynString
+nam                                   LIKE(SELF.Fields.Name)
 idx                                   LONG
   CODE
   
   SELF.ParseGroup(pGroup)
   LOOP idx = 1 TO RECORDS(SELF.Fields)
     GET(SELF.Fields,idx)
-    names.append(CLIP(SELF.Fields.Name),SELF.ColumnSep)
+    IF SELF.SerializeUsingAlias
+      nam = SELF.FindSerializeAlias()
+    ELSE
+      nam = SELF.Fields.Name
+    .    
+    names.append(CLIP(nam),SELF.ColumnSep)
   .
   RETURN names.get()
-  
+
 FlatSerializer.SerializeGroupValues PROCEDURE(*GROUP pGroup)!,STRING
 values                                fsDynString
 idx                                   LONG
@@ -474,7 +486,7 @@ fgr                                   &GROUP
     SELF.DeSerializeToGroup(fgr,idx)
     ADD(pFile)
   .
-  
+   
 FlatSerializer.ParseGroup   PROCEDURE(*GROUP pGroup,LONG pLevel = 1)!,PRIVATE
 idx                           LONG
 nam                           LIKE(SELF.Fields.Name)
@@ -488,7 +500,10 @@ gTufoSize                     LONG
   
   IF pLevel = 1    
     SELF.GetTufoInfo(pGroup,gTufoType,gTufoAddress,gTufoType)
-    IF SELF.GroupTufoType = gTufoType AND SELF.GroupTufoAddress = gTufoAddress AND SELF.GroupTufoSize = gTufoSize THEN RETURN. !Don't parse again same group
+    IF SELF.GroupTufoType = gTufoType AND SELF.GroupTufoAddress = gTufoAddress AND SELF.GroupTufoSize = gTufoSize  !Don't parse again same group
+      SELF.ResolveAliases
+      RETURN
+    . 
     SELF.GroupTufoType = gTufoType
     SELF.GroupTufoAddress = gTufoAddress
     SELF.GroupTufoSize = gTufoSize
@@ -532,13 +547,16 @@ gTufoSize                     LONG
     .
   .
   
-  IF pLevel = 1  
-    DO ResolveAliases
+  IF pLevel = 1    
+    SELF.ResolveAliases
   .
   
-ResolveAliases      ROUTINE
+FlatSerializer.ResolveAliases   PROCEDURE
+idx                               LONG
+  CODE  
 
-  IF NOT RECORDS(SELF.ColumnNames) THEN EXIT.
+  !Resolve Alias names to Field names if a file is already loaded
+  IF NOT RECORDS(SELF.ColumnNames) THEN RETURN.
   
   !Default link  
   LOOP idx = 1 TO RECORDS(SELF.ColumnNames)
@@ -546,7 +564,7 @@ ResolveAliases      ROUTINE
     SELF.ColumnNames.FieldUpperName = SELF.ColumnNames.UpperName
     PUT(SELF.ColumnNames)
   .  
-  IF NOT RECORDS(SELF.FieldsAlias) THEN EXIT.  
+  IF NOT RECORDS(SELF.FieldsAlias) THEN RETURN.  
   
   !Link field name to column name
   LOOP idx = 1 TO RECORDS(SELF.ColumnNames)
@@ -679,7 +697,6 @@ retstr                                fsDynString
     .
   .  
   RETURN CLIP(SELF.LineValues.ColumnValues.Value)
-
   
 FlatSerializer.EscapeQuotes PROCEDURE(STRING pText)!,STRING,PRIVATE
 value fsDynString
@@ -706,6 +723,18 @@ value                             fsDynString
   value.replace(SELF.LineBreakString,' ')
   value.replace(SELF.QuoteSymbol,' ')
   RETURN CLIP(value.get())
+
+FlatSerializer.FindSerializeAlias   PROCEDURE()!,STRING
+  CODE
+  
+  CLEAR(SELF.FieldsAlias)
+  SELF.FieldsAlias.TufoType = SELF.Fields.TufoType
+  SELF.FieldsAlias.TufoAddress = SELF.Fields.TufoAddress
+  SELF.FieldsAlias.TufoSize = SELF.Fields.TufoSize
+  GET(SELF.FieldsAlias,SELF.FieldsAlias.TufoType,SELF.FieldsAlias.TufoAddress,SELF.FieldsAlias.TufoSize)
+  IF NOT ERRORCODE() THEN RETURN SELF.FieldsAlias.Name.
+    
+  RETURN SELF.Fields.Name
 
 FlatSerializer.GetTufoInfo  PROCEDURE(*? pAny,*LONG pType,*LONG pAddress,*LONG pSize)
 !REGION TUFO

@@ -48,7 +48,7 @@ ColumnValues          &fsColumnValues
                     END
 
 
-!Local Class, inspired by StringClass in xmlclass.inc/TreeViewWrap.clw
+!Local Class, inspired by StringClass in libsrc/xmlclass.inc & TreeViewWrap.clw
 fsDynString         CLASS,TYPE
 s                     &STRING,PRIVATE
 len                   LONG,PRIVATE
@@ -95,6 +95,7 @@ FlatSerializer.Init PROCEDURE(<STRING pColumnSep>,<STRING pLineBreakString>,<STR
   
 FlatSerializer.InitTSV  PROCEDURE
   CODE
+  
   SELF.Init('<9>')
   SELF.SetAlwaysQuoteStrings(FALSE)
   
@@ -118,10 +119,20 @@ FlatSerializer.SetDatesPicture  PROCEDURE(STRING pPic)
   
   SELF.DatesPicture = pPic
 
+FlatSerializer.GetDatesPicture  PROCEDURE
+  CODE
+  
+  RETURN SELF.DatesPicture
+
 FlatSerializer.SetTimesPicture  PROCEDURE(STRING pPic)
   CODE
   
   SELF.TimesPicture = pPic
+
+FlatSerializer.GetTimesPicture  PROCEDURE
+  CODE
+  
+  RETURN SELF.TimesPicture
 
 FlatSerializer.SetIncludeHeaders    PROCEDURE(BOOL pVal)
   CODE
@@ -198,16 +209,11 @@ FlatSerializer.SerializeGroup   PROCEDURE(*GROUP pGroup)!,STRING
 idx                               LONG
 serialized                        fsDynString
   CODE
+  
   IF SELF.IncludeHeaders
-    serialized.set( |
-        SELF.SerializeGroupNames(pGroup) & | 
-        SELF.LineBreakString |
-        )
+    serialized.set( SELF.SerializeGroupNames(pGroup) & SELF.LineBreakString )
   .  
-  serialized.append( |
-      SELF.SerializeGroupValues(pGroup) & | 
-      SELF.LineBreakString |    
-      )  
+  serialized.append( SELF.SerializeGroupValues(pGroup) & SELF.LineBreakString )  
   RETURN serialized.get()
   
 FlatSerializer.SerializeQueue   PROCEDURE(*QUEUE pQueue)!,STRING
@@ -216,18 +222,12 @@ serialized                        fsDynString
   CODE
   
   IF SELF.IncludeHeaders
-    serialized.set( |
-        SELF.SerializeGroupNames(pQueue) & | 
-        SELF.LineBreakString |    
-        )
+    serialized.set( SELF.SerializeGroupNames(pQueue) & SELF.LineBreakString )
     
   .  
   LOOP idx = 1 TO RECORDS(pQueue)
     GET(pQueue,idx)
-    serialized.append( |        
-        SELF.SerializeGroupValues(pQueue) & | 
-        SELF.LineBreakString |    
-        )    
+    serialized.append( SELF.SerializeGroupValues(pQueue) & SELF.LineBreakString )    
   .
   RETURN serialized.get()
 
@@ -252,18 +252,12 @@ filekey                           &KEY
     SET(pFile)
   .
   IF SELF.IncludeHeaders
-    serialized.set( |
-        SELF.SerializeGroupNames(filerec) & | 
-        SELF.LineBreakString |    
-        )    
+    serialized.set( SELF.SerializeGroupNames(filerec) & SELF.LineBreakString )    
   .  
   LOOP
     NEXT(pFile)
     IF ERRORCODE() THEN BREAK.
-    serialized.append( |
-        SELF.SerializeGroupValues(filerec) & | 
-        SELF.LineBreakString |
-        )    
+    serialized.append( SELF.SerializeGroupValues(filerec) & SELF.LineBreakString )    
   .
   RETURN serialized.get()
   
@@ -281,16 +275,6 @@ FlatSerializer.SerializeFileToTextFile  PROCEDURE(*FILE pFile,STRING pFileName,<
   CODE
   
   SELF.StringToTextFile(SELF.SerializeFile(pFile,pFileKey),pFileName)
-  
-FlatSerializer.AddFieldAliasByReference PROCEDURE(*? pField,STRING pAlias)
-  CODE 
-  
-  CLEAR(SELF.FieldsAlias)
-  SELF.FieldsAlias.Ref &= pField
-  SELF.GetTufoInfo(pField,SELF.FieldsAlias.TufoType,SELF.FieldsAlias.TufoAddress,SELF.FieldsAlias.TufoSize)
-  SELF.FieldsAlias.Name = pAlias
-  SELF.FieldsAlias.UpperName = UPPER(pAlias)
-  ADD(SELF.FieldsAlias)
   
 FlatSerializer.LoadString   PROCEDURE(STRING pText)
 pos                           LONG
@@ -401,16 +385,15 @@ LineBreakLen                  LONG
         lineHasValues = 0
       .      
     .
-  .  
+  .    
   
 FlatSerializer.LoadTextFile PROCEDURE(STRING pFileName)
 str &STRING
   CODE
   
   str &= SELF.StringFromTextFile(pFileName)
-  IF NOT str &= NULL
-    SELF.LoadString(str)
-  .
+  IF str &= NULL THEN RETURN.
+  SELF.LoadString(str)
   DISPOSE(str)
    
 FlatSerializer.GetLinesCount    PROCEDURE()!,LONG
@@ -486,7 +469,87 @@ fgr                                   &GROUP
     SELF.DeSerializeToGroup(fgr,idx)
     ADD(pFile)
   .
-   
+  
+FlatSerializer.AddFieldAliasByReference PROCEDURE(*? pField,STRING pAlias)
+  CODE 
+  
+  CLEAR(SELF.FieldsAlias)
+  SELF.FieldsAlias.Ref &= pField
+  SELF.GetTufoInfo(pField,SELF.FieldsAlias.TufoType,SELF.FieldsAlias.TufoAddress,SELF.FieldsAlias.TufoSize)
+  SELF.FieldsAlias.Name = pAlias
+  SELF.FieldsAlias.UpperName = UPPER(pAlias)
+  ADD(SELF.FieldsAlias)  
+  
+FlatSerializer.DebugView    PROCEDURE(STRING pStr)
+pre                           STRING('fs')
+lcstr                         CSTRING(SIZE(pre)+SIZE(pStr)+3)
+  CODE
+  
+  lcstr = pre&'|'&pStr&'|'
+  fs_OutputDebugString(lcstr)  
+
+FlatSerializer.StringToTextFile PROCEDURE(STRING pStr,STRING pFileName)!
+bufSize                           EQUATE(32768)
+dosFile                           FILE,DRIVER('DOS'),CREATE
+buf                                 RECORD;STRING(bufSize).
+                                  END
+pos                               LONG(1)
+strLen                            LONG
+  CODE  
+  
+  dosFile{PROP:Name} = pFileName
+  CREATE(dosFile)
+  IF ERRORCODE() THEN RETURN.
+  OPEN(dosFile,12h) !ReadWrite+DenyAll
+  IF ERRORCODE() THEN RETURN.
+  strLen = LEN(pStr)
+  LOOP UNTIL pos > strLen
+    dosFile.Buf = pStr[ pos : strLen ]
+    ADD(dosFile, |
+        CHOOSE(pos + bufSize > strLen, |
+        strLen - pos + 1, |
+        bufSize))
+    pos += bufSize
+  .
+  CLOSE(dosfile)
+  
+FlatSerializer.StringFromTextFile   PROCEDURE(STRING pFileName)!,*STRING
+bufSize                               EQUATE(32768)
+dosFile                               FILE,DRIVER('DOS'),CREATE
+                                        RECORD
+buf                                       STRING(bufSize)
+                                        END
+                                      END
+pos                                   LONG(1)
+poslen                                LONG
+fileSize                              LONG
+str                                   &STRING
+
+  CODE  
+  
+  dosFile{PROP:Name} = pFileName   
+  OPEN(dosFile,20h) !ReadOnly+DenyWrite
+  IF ERRORCODE() THEN RETURN NULL.  
+  fileSize = BYTES(dosFile)  
+  IF NOT fileSize THEN 
+    CLOSE(dosFile)
+    RETURN NULL
+  .
+  str &= NEW STRING(fileSize)  
+  SEND (dosFile, 'FILEBUFFERS=' & ROUND(fileSize/512, 1))
+  LOOP UNTIL pos > fileSize
+    GET(dosFile,pos)
+    IF pos + bufSize > fileSize
+      poslen = fileSize - pos + 1
+    ELSE
+      poslen = bufSize
+    .   
+    str [ pos : pos + poslen - 1 ] = dosFile.buf [ 1 : poslen ]
+    pos += bufSize    
+  .
+  CLOSE(dosfile)
+  RETURN str
+  
 FlatSerializer.ParseGroup   PROCEDURE(*GROUP pGroup,LONG pLevel = 1)!,PRIVATE
 idx                           LONG
 nam                           LIKE(SELF.Fields.Name)
@@ -865,74 +928,7 @@ idx2                              LONG
       DISPOSE(SELF.LineValues.ColumnValues)
     .
     DELETE(SELF.LineValues)
-  .
-  
-FlatSerializer.StringToTextFile PROCEDURE(STRING pStr,STRING pFileName)!,PRIVATE
-bufSize                               EQUATE(32768)
-dosFile                               FILE,DRIVER('DOS'),CREATE
-buf                                     RECORD;STRING(bufSize).
-                                      END
-pos                               LONG(1)
-strLen                            LONG
-  CODE  
-  dosFile{PROP:Name} = pFileName
-  CREATE(dosFile)
-  IF ERRORCODE() THEN RETURN.
-  OPEN(dosFile)
-  IF ERRORCODE() THEN RETURN.
-  strLen = LEN(pStr)
-  LOOP UNTIL pos > strLen
-    dosFile.Buf = pStr[ pos : strLen ]
-    ADD(dosFile, |
-        CHOOSE(pos + bufSize > strLen, |
-        strLen - pos + 1, |
-        bufSize))
-    pos += bufSize
-  .
-  CLOSE(dosfile)
-  
-FlatSerializer.StringFromTextFile   PROCEDURE(STRING pFileName)!,*STRING,PRIVATE
-bufSize                               EQUATE(32768)
-dosFile                               FILE,DRIVER('DOS'),CREATE
-                                        RECORD
-buf                                       STRING(bufSize)
-                                        END
-                                      END
-pos                                   LONG(1)
-poslen                                LONG
-fileSize                              LONG
-str                                   &STRING
-
-  CODE  
-  dosFile{PROP:Name} = pFileName   
-  OPEN(dosFile,40h) !ReadOnly+DenyNone
-  IF ERRORCODE() THEN RETURN NULL.  
-  fileSize = BYTES(dosFile)  
-  IF NOT fileSize THEN 
-    CLOSE(dosFile)
-    RETURN NULL
-  .
-  str &= NEW STRING(fileSize)  
-  SEND (dosFile, 'FILEBUFFERS=' & ROUND(fileSize/512, 1))
-  LOOP UNTIL pos > fileSize
-    GET(dosFile,pos)
-    IF pos + bufSize > fileSize
-      poslen = fileSize - pos + 1
-    ELSE
-      poslen = bufSize
-    .   
-    str [ pos : pos + poslen - 1 ] = dosFile.buf [ 1 : poslen ]
-    pos += bufSize    
-  .
-  CLOSE(dosfile)
-  RETURN str
-
-FlatSerializer.DebugView    PROCEDURE(STRING pStr)
-pre                           STRING('fs')
-lcstr                         CSTRING(SIZE(pre)+SIZE(pStr)+3)
-  CODE
-  lcstr = pre&'|'&pStr&'|'
-  fs_OutputDebugString(lcstr)  
+  .  
   
 FlatSerializer.Construct    PROCEDURE
   CODE
@@ -959,31 +955,35 @@ FlatSerializer.Destruct PROCEDURE
 
 fsDynString.set     PROCEDURE(STRING str)
   CODE
+
   DISPOSE(SELF.s)
-  IF SIZE(str) > 0
-    SELF.len = SIZE(str)
-    SELF.s &= NEW STRING(SELF.len)
-    SELF.s = str
-  .
+  SELF.len = SIZE(str)
+  IF NOT SELF.len THEN RETURN.
+  SELF.s &= NEW STRING(SELF.len)
+  SELF.s = str
   
 fsDynString.get           PROCEDURE()!,STRING
   CODE
+
   IF SELF.s &= NULL THEN RETURN ''.
   RETURN SELF.s
 
 fsDynString.get     PROCEDURE(LONG pstart,LONG pend)!,STRING
   CODE
+
   IF SELF.s &= NULL THEN RETURN ''.
   IF pstart > SELF.len() OR pend > SELF.len() OR pstart > pend OR pstart < 0 OR pend < 0 THEN RETURN ''.
   RETURN SELF.s[ pstart : pend ]
 
 fsDynString.len     PROCEDURE()!,LONG
   CODE
+
   IF SELF.s &= NULL THEN RETURN 0.
   RETURN SELF.len
 
 fsDynString.append  PROCEDURE(STRING str)
   CODE
+
   SELF.set(SELF.get() & str)
 
 fsDynString.append  PROCEDURE(STRING str,STRING sep)
@@ -1007,11 +1007,7 @@ newStringLen          LONG
   LOOP
     pos = INSTRING(pOldString,SELF.s,1,start)
     IF NOT pos THEN BREAK.
-    SELF.set( | 
-        SELF.get(1,pos-1) & |
-        pNewString & |
-        SELF.get(pos+oldStringLen,SELF.len()) |
-        ) 
+    SELF.set( SELF.get(1,pos-1) & pNewString & SELF.get(pos+oldStringLen,SELF.len())) 
     start = pos + newStringLen
   .
 

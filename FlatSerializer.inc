@@ -32,13 +32,16 @@ fs:DeformatAll      EQUATE(0111b)
 fs:DeformatNothing  EQUATE(0000b)
 
 FlatSerializer      CLASS,MODULE('FlatSerializer'),LINK('FlatSerializer'),TYPE
+!Setup
 Init                  PROCEDURE(<STRING pColumnSep>,<STRING pLineBreakString>,<STRING pQuoteSymbol>)
 InitTSV               PROCEDURE
 SetColumnSeparator    PROCEDURE(STRING pSep)
 SetLineBreakString    PROCEDURE(STRING pStr)
 SetQuoteSymbol        PROCEDURE(STRING pSym)
 SetDatesPicture       PROCEDURE(STRING pPic)
+GetDatesPicture       PROCEDURE,STRING
 SetTimesPicture       PROCEDURE(STRING pPic)
+GetTimesPicture       PROCEDURE,STRING
 SetIncludeHeaders     PROCEDURE(BOOL pVal)
 SetAlwaysQuoteStrings PROCEDURE(BOOL pVal)
 SetRemovePrefixes     PROCEDURE(BOOL pVal)
@@ -58,7 +61,6 @@ SerializeQueueToTextFile  PROCEDURE(*QUEUE pQueue,STRING pFileName)
 SerializeFileToTextFile   PROCEDURE(*FILE pFile,STRING pFileName,<*KEY pFileKey>)
 
 !Deserialize
-AddFieldAliasByReference  PROCEDURE(*? pField,STRING pAlias)
 LoadString            PROCEDURE(STRING pText)
 LoadTextFile          PROCEDURE(STRING pFileName)
 GetLinesCount         PROCEDURE(),LONG
@@ -68,6 +70,9 @@ GetValueByName        PROCEDURE(STRING pColumnName,LONG pLineNumber = 1,LONG pDe
 DeSerializeToGroup    PROCEDURE(*GROUP pGroup,LONG pLineNumber = 1)
 DeSerializeToQueue    PROCEDURE(*QUEUE pQueue)
 DeSerializeToFile     PROCEDURE(*FILE pFile)
+
+!Serialize & Deserialize
+AddFieldAliasByReference  PROCEDURE(*? pField,STRING pAlias)
 
 !Utility
 StringToTextFile      PROCEDURE(STRING pStr,STRING pFileName)!,PRIVATE
@@ -96,8 +101,8 @@ Destruct              PROCEDURE
 ColumnSep             CSTRING(5),PRIVATE
 LineBreakString       CSTRING(5),PRIVATE
 QuoteSymbol           CSTRING(5),PRIVATE
-DatesPicture          STRING(10),PRIVATE
-TimesPicture          STRING(10),PRIVATE
+DatesPicture          CSTRING(10),PRIVATE
+TimesPicture          CSTRING(10),PRIVATE
 IncludeHeaders        BOOL,PRIVATE
 AlwaysQuoteStrings    BOOL,PRIVATE
 RemovePrefixes        BOOL,PRIVATE

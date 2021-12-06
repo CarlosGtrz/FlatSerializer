@@ -1,0 +1,18 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+# Clarion 2.1.0.2447
+Project("{12B76EC0-1D7B-4FA7-A7D0-C524288B48A1}") = "fsTool", "fsTool.cwproj", "{7F0B416E-7D89-4A31-91CE-A8B7C0BF3F8E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7F0B416E-7D89-4A31-91CE-A8B7C0BF3F8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F0B416E-7D89-4A31-91CE-A8B7C0BF3F8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F0B416E-7D89-4A31-91CE-A8B7C0BF3F8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F0B416E-7D89-4A31-91CE-A8B7C0BF3F8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -55,6 +55,7 @@ Some of the features:
 * Handles `NAME()` with "extended | attributes".
 * Removes prefixes by default.
 * Can be configured to use quotes in strings only when needed (the string contains new lines or commas).
+* Includes a tool to create a queue declaration and sample code from a csv file or text from the clipboard
   
   
 ## *Install*
@@ -223,3 +224,20 @@ DebugView (STRING pStr)
 ```
 Writes string to debug output.
 
+## Tools
+
+There is a tool in folder `fsTool` with these options:
+
+* Read CSV file: Reads a CSV file and shows the number of columns, lines, names of columns and the values of the first and last line.
+* Read TSV file: Does the same for TSV files
+* Queue and alias from file to clipboard: Reads a CSV or TSV file, shows a window to enter info like queue label, and creates the queue declaration and code
+* Queue and alias from/to clipboard: Does the same but reads the CSV text from the clipboard (and rereads it every time the window gains focus).
+
+![fsTool Screenshot1](fsTool/fstool1.png)  
+  
+![fsTool Screenshot2](fsTool/fstool2.png)  
+  
+![fsTool Screenshot3](fsTool/fstool3.png)  
+  
+![fsTool Screenshot4](fsTool/fstool4.png)  
+  
